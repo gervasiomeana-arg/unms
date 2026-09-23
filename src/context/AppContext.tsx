@@ -120,6 +120,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (item.type === 'video' && !item.mediaUrl && item.speaker === 'Testimonio ilustrativo') {
         return { ...item, title: sample.title, duration: sample.duration, mediaUrl: sample.mediaUrl };
       }
+      if (item.type === 'audio' && !item.mediaUrl && item.id === 'test-podcast-poesia-oral' && item.speaker === 'Colectivo cultural (ejemplo)') {
+        return { ...sample };
+      }
       if (item.type === 'photo_story' && !item.photoUrls?.length && item.id === 'test-fotoensayo-cooperativas') {
         return { ...item, title: sample.title, duration: sample.duration, photoUrls: sample.photoUrls };
       }
