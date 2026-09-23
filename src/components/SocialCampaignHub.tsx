@@ -252,8 +252,12 @@ export const SocialCampaignHub: React.FC = () => {
               </h3>
               <p className="mt-2 text-xs text-stone-600 leading-relaxed">
                 {language === 'ar'
-                  ? 'انشر رسالة دعم ومؤازرة لتصل مباشرة إلى لجان ومراكز النساء الصحراويات بالمخيمات.'
-                  : 'Envía tus palabras de aliento y solidaridad a las mujeres saharauis en los campamentos.'}
+                  ? 'جرّب مساحة التضامن في هذه المعاينة. تبقى رسالتك في هذا المتصفح فقط.'
+                  : language === 'fr'
+                  ? 'Essayez cet espace de solidarité. Votre message reste dans ce navigateur.'
+                  : language === 'en'
+                  ? 'Try this solidarity space. Your message stays in this browser.'
+                  : 'Probá este espacio de solidaridad. Tu mensaje queda solo en este navegador.'}
               </p>
 
               <form onSubmit={handlePostMessage} className="mt-6 space-y-4">

@@ -51,6 +51,8 @@ const MainLayout: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
+            role="status"
+            aria-live="polite"
             className={`fixed bottom-6 ${
               isRTL ? 'left-6' : 'right-6'
             } z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md border text-sm font-semibold max-w-md ${

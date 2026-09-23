@@ -29,6 +29,8 @@ export const BlogSection: React.FC = () => {
     { id: 'cooperative', label: { es: 'Cooperativas', en: 'Cooperatives', ar: 'التعاونيات', fr: 'Coopératives' } },
     { id: 'advocacy', label: { es: 'Derechos Humanos', en: 'Human Rights', ar: 'حقوق الإنسان', fr: 'Droits Humains' } },
     { id: 'culture', label: { es: 'Cultura', en: 'Culture', ar: 'الثقافة', fr: 'Culture' } },
+    { id: 'humanitarian', label: { es: 'Acción humanitaria', en: 'Humanitarian', ar: 'العمل الإنساني', fr: 'Action humanitaire' } },
+    { id: 'empowerment', label: { es: 'Autonomía', en: 'Empowerment', ar: 'التمكين', fr: 'Autonomie' } },
   ];
 
   // Filter posts based on category and search query
@@ -48,6 +50,8 @@ export const BlogSection: React.FC = () => {
   });
 
   const featuredPost = blogPosts.find((p) => p.featured) || blogPosts[0];
+  const showFeatured = Boolean(featuredPost && selectedCategory === 'all' && !searchQuery);
+  const visiblePosts = showFeatured ? filteredPosts.filter(post => post.id !== featuredPost.id) : filteredPosts;
 
   return (
     <section id="historias-blog" className="py-16 lg:py-24 bg-[#FAF6EE] text-stone-900 border-b border-stone-200">
@@ -68,7 +72,7 @@ export const BlogSection: React.FC = () => {
         {/* Search & Category Filter Bar */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-stone-200 shadow-sm mb-12 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Category Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
+          <div className="blog-filters flex flex-nowrap overflow-x-auto md:flex-wrap items-center gap-1.5 w-full md:w-auto">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -100,7 +104,7 @@ export const BlogSection: React.FC = () => {
         </div>
 
         {/* Featured Post Card (Hero Highlight) if in "all" or matching query */}
-        {featuredPost && selectedCategory === 'all' && !searchQuery && (
+        {showFeatured && featuredPost && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -194,7 +198,7 @@ export const BlogSection: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post, idx) => (
+            {visiblePosts.map((post, idx) => (
               <motion.article
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}

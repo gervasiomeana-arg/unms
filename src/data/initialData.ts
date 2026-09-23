@@ -1,10 +1,10 @@
 import { BlogPost, TestimonialMedia, Campaign, PushNotification, DonationRecord, SolidarityMessage, ImpactStat } from '../types';
-import heroImage from '../assets/images/unms_hero_women_1788306077567.jpg';
-import weavingImage from '../assets/images/unms_cooperative_weaving_1788306089166.jpg';
-import healthImage from '../assets/images/unms_health_clinic_1788306102072.jpg';
-import educationImage from '../assets/images/unms_education_school_1788306112923.jpg';
-import advocacyImage from '../assets/images/unms_un_advocacy_1788306125550.jpg';
-import cultureImage from '../assets/images/unms_culture_tea_1788306136612.jpg';
+import heroImage from '../assets/images/unms_hero_women_1788306077567.webp';
+import weavingImage from '../assets/images/unms_cooperative_weaving_1788306089166.webp';
+import healthImage from '../assets/images/unms_health_clinic_1788306102072.webp';
+import educationImage from '../assets/images/unms_education_school_1788306112923.webp';
+import advocacyImage from '../assets/images/unms_un_advocacy_1788306125550.webp';
+import cultureImage from '../assets/images/unms_culture_tea_1788306136612.webp';
 
 // Asset paths
 export const IMAGES = {

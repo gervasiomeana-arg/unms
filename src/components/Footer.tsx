@@ -46,6 +46,9 @@ export const Footer: React.FC = () => {
               <p className="mt-2 text-xs text-stone-400">
                 {t.newsletterDesc[language]}
               </p>
+              <p className="mt-2 text-xs font-semibold text-amber-300">
+                {language === 'ar' ? 'معاينة فقط: لا يتم تسجيل البريد الإلكتروني.' : language === 'fr' ? 'Aperçu : aucune adresse e-mail n’est enregistrée.' : language === 'en' ? 'Preview: no email address is registered.' : 'Vista previa: no se registra ninguna dirección de correo.'}
+              </p>
             </div>
 
             {/* Newsletter input */}

@@ -363,7 +363,7 @@ export const AdminPanel: React.FC = () => {
                 className="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <Unlock className="w-3.5 h-3.5 text-amber-400" />
-                <span>{language === 'ar' ? 'تسجيل الخروج' : 'Cerrar Sesión'}</span>
+                <span>{language === 'ar' ? 'إغلاق اللوحة' : language === 'fr' ? 'Fermer' : language === 'en' ? 'Close panel' : 'Cerrar panel'}</span>
               </button>
             )}
             <button
@@ -439,7 +439,7 @@ export const AdminPanel: React.FC = () => {
             /* ================= AUTHENTICATED ADMIN DASHBOARD ================= */
             <div className="space-y-6">
               {/* Navigation Tabs Bar */}
-              <div className="flex flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
+              <div className="admin-tabs flex flex-nowrap overflow-x-auto sm:flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
