@@ -113,7 +113,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const [testimonials, setTestimonials] = useState<TestimonialMedia[]>(() => {
-    return loadLocalList('unms_testimonials', initialTestimonials);
+    // Upgrade previously cached demo entries without replacing custom media.
+    return loadLocalList('unms_testimonials', initialTestimonials).map((item) => {
+      const sample = initialTestimonials.find((entry) => entry.id === item.id);
+      if (!sample) return item;
+      if (item.type === 'video' && !item.mediaUrl && item.speaker === 'Testimonio ilustrativo') {
+        return { ...item, title: sample.title, duration: sample.duration, mediaUrl: sample.mediaUrl };
+      }
+      if (item.type === 'photo_story' && !item.photoUrls?.length && item.id === 'test-fotoensayo-cooperativas') {
+        return { ...item, title: sample.title, duration: sample.duration, photoUrls: sample.photoUrls };
+      }
+      return item;
+    });
   });
 
   const [campaigns, setCampaigns] = useState<Campaign[]>(() => {

@@ -391,10 +391,10 @@ export const initialTestimonials: TestimonialMedia[] = [
     id: 'test-shweirif-liderazgo',
     type: 'video',
     title: {
-      es: 'Construyendo una República en el Refugio: 50 Años de Gestión Femenina',
-      en: 'Building a Republic in Exile: 50 Years of Women-Led Governance',
-      ar: 'بناء المؤسسات في اللجوء: 50 عاماً من القيادة النسائية في المخيمات',
-      fr: 'Bâtir une République en Exil : 50 Ans de Gouvernance Féminine',
+      es: 'Muestra visual: liderazgo y organización de mujeres saharauis',
+      en: 'Visual preview: Sahrawi women’s leadership and organization',
+      ar: 'عرض بصري تجريبي: قيادة النساء الصحراويات وتنظيمهن',
+      fr: 'Aperçu visuel : leadership et organisation des femmes sahraouies',
     },
     speaker: 'Testimonio ilustrativo',
     speakerRole: {
@@ -404,8 +404,9 @@ export const initialTestimonials: TestimonialMedia[] = [
       fr: 'Secrétaire Générale de l’UNMS',
     },
     location: 'Wilaya de Bojador',
-    duration: '04:45',
+    duration: '00:07',
     thumbnailUrl: IMAGES.hero,
+    mediaUrl: '/media/muestra-liderazgo.mp4',
     quote: {
       es: 'Cuando llegamos sin nada en 1975, las mujeres levantamos los primeros refugios, organizamos las escuelas y repartimos cada grano de alimento con justicia absoluta.',
       en: 'When we arrived with nothing in 1975, women built the first shelters, set up the schools, and distributed every grain of food with total equity.',
@@ -432,10 +433,10 @@ Today, over 70% of teaching and healthcare roles in the camps are held by univer
     id: 'test-dra-salek-salud',
     type: 'video',
     title: {
-      es: 'De la Tienda al Quirófano: La Vocación de Salvar Vidas en el Desierto',
-      en: 'From Tent to Operating Room: Saving Lives in the Deep Desert',
-      ar: 'من الخيمة إلى غرفة العمليات: رسالة إنقاذ الأرواح في عمق الصحراء',
-      fr: 'De la Tente au Bloc Opératoire : Sauver des Vies dans le Désert',
+      es: 'Muestra visual: salud y vida comunitaria',
+      en: 'Visual preview: health and community life',
+      ar: 'عرض بصري تجريبي: الصحة والحياة المجتمعية',
+      fr: 'Aperçu visuel : santé et vie communautaire',
     },
     speaker: 'Testimonio ilustrativo',
     speakerRole: {
@@ -445,8 +446,9 @@ Today, over 70% of teaching and healthcare roles in the camps are held by univer
       fr: 'Spécialiste en Gynécologie et Santé Maternelle dans les Camps',
     },
     location: 'Hospital Central de Smara',
-    duration: '03:30',
+    duration: '00:07',
     thumbnailUrl: IMAGES.health,
+    mediaUrl: '/media/muestra-salud.mp4',
     quote: {
       es: 'Estudié medicina en el extranjero gracias al apoyo de mi comunidad, y regresé al campamento para devolverle cada gota de esperanza a nuestras madres.',
       en: 'I studied medicine abroad through my community support, and I returned to the camps to give back hope to every mother and newborn.',
@@ -504,10 +506,10 @@ El compromiso de las enfermeras saharauis es inigualable: no hay descanso cuando
     id: 'test-fotoensayo-cooperativas',
     type: 'photo_story',
     title: {
-      es: 'Ensayo Fotográfico: Manos que Crean Futuro en los Talleres de Cuero y Telares',
-      en: 'Photo Essay: Hands Creating the Future in Leather & Textile Guilds',
-      ar: 'معرض وثائقي مصور: أيادٍ تصنع المستقبل في ورشات الجلد والنسيج',
-      fr: 'Essai Photo : Des Mains qui Créent l’Avenir dans les Ateliers d’Artisanat',
+      es: 'Galería visual de la propuesta: comunidad y cultura',
+      en: 'Proposal image gallery: community and culture',
+      ar: 'معرض صور المشروع: المجتمع والثقافة',
+      fr: 'Galerie du projet : communauté et culture',
     },
     speaker: 'Colectivo de Artesanas de la Wilaya de Smara',
     speakerRole: {
@@ -517,8 +519,9 @@ El compromiso de las enfermeras saharauis es inigualable: no hay descanso cuando
       fr: 'Association des Femmes Artisanes UNMS',
     },
     location: 'Wilaya de Smara',
-    duration: '12 Fotografías en Alta Definición',
+    duration: '6 imágenes ilustrativas',
     thumbnailUrl: IMAGES.weaving,
+    photoUrls: [IMAGES.weaving, IMAGES.hero, IMAGES.education, IMAGES.health, IMAGES.advocacy, IMAGES.culture],
     quote: {
       es: 'En cada bolso de cuero curtido al sol y en cada bordado de melhfa está grabada la belleza de nuestra tierra natal.',
       en: 'In every sun-tanned leather pouch and embroidered melhfa is engraved the timeless beauty of our homeland.',

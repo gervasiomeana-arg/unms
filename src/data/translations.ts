@@ -330,22 +330,22 @@ export const translations = {
   // Audiovisual Gallery
   gallery: {
     tag: {
-      es: 'Archivo Vivo',
-      en: 'Living Archive',
-      ar: 'الأرشيف الحي',
-      fr: 'Archive Vivante',
+      es: 'Vista previa multimedia',
+      en: 'Media preview',
+      ar: 'معاينة الوسائط',
+      fr: 'Aperçu multimédia',
     },
     title: {
-      es: 'Galería Interactiva de Testimonios Audiovisuales',
-      en: 'Interactive Audiovisual Testimonial Gallery',
-      ar: 'معرض تفاعلي للشهادات والتسجيلات المرئية والمسموعة',
-      fr: 'Galerie Interactive de Témoignages Audiovisuels',
+      es: 'Historias e imágenes de la propuesta',
+      en: 'Stories and images from the proposal',
+      ar: 'قصص وصور من مقترح المشروع',
+      fr: 'Récits et images du projet',
     },
     subtitle: {
-      es: 'Escucha y observa los testimonios directos de médicas, maestras, poetas, artesanas y jóvenes activistas en los campamentos de Tinduf y la diáspora.',
-      en: 'Listen and watch first-hand accounts from doctors, teachers, poets, craftswomen, and youth activists across Tindouf refugee camps and the diaspora.',
-      ar: 'استمع وشاهد شهادات حية لطبيبات، معلمات، شاعرات، حرفيات وناشطات شابات في مخيمات تندوف والشتات.',
-      fr: 'Écoutez et regardez les témoignages directs de médecins, enseignantes, poétesses et artisanes dans les camps et la diaspora.',
+      es: 'Explora vídeos de muestra, relatos ilustrativos y una galería de imágenes. El material definitivo se incorporará con el cliente.',
+      en: 'Explore sample videos, illustrative stories and an image gallery. Final material will be added with the client.',
+      ar: 'استكشف مقاطع تجريبية وقصصاً توضيحية ومعرض صور. ستضاف المواد النهائية بالتعاون مع العميل.',
+      fr: 'Découvrez des vidéos de démonstration, des récits illustratifs et une galerie d’images. Les contenus définitifs seront ajoutés avec le client.',
     },
     tabs: {
       all: {
@@ -355,10 +355,10 @@ export const translations = {
         fr: 'Tous les Médias',
       },
       video: {
-        es: 'Vídeo Testimonios',
-        en: 'Video Testimonies',
-        ar: 'شهادات مرئية',
-        fr: 'Témoignages Vidéo',
+        es: 'Vídeos de muestra',
+        en: 'Sample videos',
+        ar: 'مقاطع تجريبية',
+        fr: 'Vidéos de démonstration',
       },
       audio: {
         es: 'Audios y Podcasts',
@@ -367,10 +367,10 @@ export const translations = {
         fr: 'Audios & Podcasts',
       },
       photos: {
-        es: 'Ensayos Fotográficos',
-        en: 'Photo Essays',
-        ar: 'معارض وثائقية مصورة',
-        fr: 'Essais Photographiques',
+        es: 'Galería fotográfica',
+        en: 'Photo gallery',
+        ar: 'معرض الصور',
+        fr: 'Galerie photos',
       },
     },
     playVideo: {

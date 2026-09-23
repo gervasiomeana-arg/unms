@@ -40,6 +40,7 @@ export interface TestimonialMedia {
   duration?: string;
   thumbnailUrl: string;
   mediaUrl?: string; // video URL or audio URL
+  photoUrls?: string[]; // images in a photo gallery, in display order
   quote: MultilingualText;
   fullTranscript: MultilingualText;
   date: string;

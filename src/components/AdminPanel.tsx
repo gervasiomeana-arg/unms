@@ -217,8 +217,9 @@ export const AdminPanel: React.FC = () => {
       fr: 'Porte-parole communautaire',
     };
 
+    const photoUrls = currentMedia.type === 'photo_story' ? currentMedia.photoUrls?.map(url => url.trim()).filter(Boolean) : undefined;
     if (currentMedia.id) {
-      updateTestimonial(currentMedia as TestimonialMedia);
+      updateTestimonial({ ...currentMedia, photoUrls, mediaUrl: currentMedia.mediaUrl?.trim() || undefined } as TestimonialMedia);
     } else {
       addTestimonial({
         type: currentMedia.type || 'video',
@@ -239,6 +240,7 @@ export const AdminPanel: React.FC = () => {
         duration: currentMedia.duration || '04:15',
         thumbnailUrl: currentMedia.thumbnailUrl || IMAGES.weaving,
         mediaUrl: currentMedia.mediaUrl?.trim() || undefined,
+        photoUrls,
         quote: {
           es: quote.es || title.es,
           en: quote.en || quote.es || title.es,
@@ -1463,7 +1465,7 @@ export const AdminPanel: React.FC = () => {
                       <select
                         value={currentMedia.type || 'video'}
                         onChange={(e) =>
-                          setCurrentMedia({ ...currentMedia, type: e.target.value as any })
+                          setCurrentMedia({ ...currentMedia, type: e.target.value as TestimonialMedia['type'] })
                         }
                         className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
                       >
@@ -1484,7 +1486,7 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-stone-300 mb-1">Duración (mm:ss)</label>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Duración o cantidad de fotos</label>
                       <input
                         type="text"
                         value={currentMedia.duration || '04:12'}
@@ -1561,10 +1563,15 @@ export const AdminPanel: React.FC = () => {
                       ))}
                     </div>
                   </div>
+                  {currentMedia.type === 'photo_story' && <div>
+                    <label htmlFor="media-photo-urls" className="mb-1 block text-xs font-bold text-stone-300">Fotos de la galería (una URL o ruta por línea)</label>
+                    <textarea id="media-photo-urls" rows={4} value={(currentMedia.photoUrls || []).join('\n')} onChange={(e) => setCurrentMedia({ ...currentMedia, photoUrls: e.target.value.split('\n') })} placeholder="https://ejemplo.org/foto-1.jpg" className="w-full resize-y rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
+                    <p className="mt-1 text-[11px] text-stone-400">Si no añades fotos, se mostrará solo la portada.</p>
+                  </div>}
                   <div>
                     <label htmlFor="media-source-url" className="mb-1 block text-xs font-bold text-stone-300">URL del archivo audiovisual (opcional)</label>
-                    <input id="media-source-url" type="url" value={currentMedia.mediaUrl || ''} onChange={(e) => setCurrentMedia({ ...currentMedia, mediaUrl: e.target.value })} placeholder="https://ejemplo.org/archivo.mp4" className="w-full rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
-                    <p className="mt-1 text-[11px] text-stone-400">Sin archivo, se mostrará la imagen y el relato.</p>
+                    <input id="media-source-url" type="text" value={currentMedia.mediaUrl || ''} onChange={(e) => setCurrentMedia({ ...currentMedia, mediaUrl: e.target.value })} placeholder="https://ejemplo.org/archivo.mp4 o /media/video.mp4" className="w-full rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
+                    <p className="mt-1 text-[11px] text-stone-400">Usa el enlace directo a un archivo MP4/WebM o audio; una página de YouTube no es un archivo reproducible aquí. Sin archivo se mostrará la imagen y el relato.</p>
                   </div>
 
                   <div className="flex items-center gap-2 pt-2">

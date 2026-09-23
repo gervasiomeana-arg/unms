@@ -100,7 +100,7 @@ export const AudiovisualGallery: React.FC = () => {
                       {media.type === 'video' && <Video className="w-3.5 h-3.5" />}
                       {media.type === 'audio' && <Mic className="w-3.5 h-3.5" />}
                       {media.type === 'photo_story' && <ImageIcon className="w-3.5 h-3.5" />}
-                      <span className="capitalize">{media.type.replace('_', ' ')}</span>
+                      <span>{media.type === 'photo_story' ? (language === 'es' ? 'Galería de fotos' : 'Photo gallery') : media.type === 'video' ? (language === 'es' ? 'Vídeo de muestra' : 'Sample video') : 'Audio'}</span>
                     </span>
                   </div>
 
@@ -112,6 +112,7 @@ export const AudiovisualGallery: React.FC = () => {
                   </div>
 
                   {/* Duration tag at bottom */}
+                  {media.type === 'photo_story' && media.photoUrls && media.photoUrls.length > 1 && <span className="absolute bottom-3 right-3 rounded-md bg-stone-950/80 px-2.5 py-1 text-xs text-white">{media.photoUrls.length} {language === 'es' ? 'fotos' : 'photos'}</span>}
                   {media.duration && media.mediaUrl && (
                     <div className="absolute bottom-3 right-3 rtl:right-auto rtl:left-3 px-2.5 py-1 rounded-md bg-stone-950/80 text-[11px] font-mono text-stone-300 border border-stone-800 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -147,7 +148,7 @@ export const AudiovisualGallery: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:text-amber-300">
-                  <span>{t.viewTranscript[language]}</span>
+                  <span>{media.type === 'photo_story' ? (language === 'es' ? 'Ver fotografías' : 'View photos') : media.type === 'video' && media.mediaUrl ? (language === 'es' ? 'Reproducir vídeo' : 'Play video') : t.viewTranscript[language]}</span>
                   <ArrowRight className={`w-3.5 h-3.5 ${isRTL ? 'rotate-180' : ''}`} />
                 </div>
               </div>
