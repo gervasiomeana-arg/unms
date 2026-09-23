@@ -72,14 +72,15 @@ export const AudiovisualGallery: React.FC = () => {
         {/* Media Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredMedia.map((media, idx) => (
-            <motion.div
+            <motion.button
+              type="button"
               key={media.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
               onClick={() => setActiveMediaModal(media)}
-              className="bg-stone-900 rounded-3xl overflow-hidden border border-stone-800 hover:border-amber-500/50 shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="bg-stone-900 rounded-3xl overflow-hidden border border-stone-800 hover:border-amber-500/50 shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left rtl:text-right focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-500"
             >
               <div>
                 {/* Thumbnail Frame */}
@@ -87,6 +88,7 @@ export const AudiovisualGallery: React.FC = () => {
                   <img
                     src={media.thumbnailUrl}
                     alt={getLocalized(media.title, language)}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                   />
@@ -105,12 +107,12 @@ export const AudiovisualGallery: React.FC = () => {
                   {/* Play Button Icon in Center */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-14 h-14 rounded-full bg-amber-600/90 group-hover:bg-amber-500 text-stone-950 flex items-center justify-center shadow-xl group-hover:scale-115 transition-transform">
-                      <Play className={`w-6 h-6 fill-stone-950 ${isRTL ? 'rotate-180' : ''}`} />
+                      {media.mediaUrl ? <Play className={`w-6 h-6 fill-stone-950 ${isRTL ? 'rotate-180' : ''}`} /> : <Quote className="w-6 h-6" />}
                     </div>
                   </div>
 
                   {/* Duration tag at bottom */}
-                  {media.duration && (
+                  {media.duration && media.mediaUrl && (
                     <div className="absolute bottom-3 right-3 rtl:right-auto rtl:left-3 px-2.5 py-1 rounded-md bg-stone-950/80 text-[11px] font-mono text-stone-300 border border-stone-800 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       <span>{media.duration}</span>
@@ -149,7 +151,7 @@ export const AudiovisualGallery: React.FC = () => {
                   <ArrowRight className={`w-3.5 h-3.5 ${isRTL ? 'rotate-180' : ''}`} />
                 </div>
               </div>
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       </div>

@@ -69,6 +69,17 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const loadLocalList = <T,>(key: string, fallback: T[]): T[] => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed as T[] : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // 1. Language state
   const [language, setLanguageState] = useState<Language>(() => {
@@ -98,33 +109,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 2. Data states with LocalStorage persistence
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => {
-    const saved = localStorage.getItem('unms_blog_posts');
-    return saved ? JSON.parse(saved) : initialBlogPosts;
+    return loadLocalList('unms_blog_posts', initialBlogPosts);
   });
 
   const [testimonials, setTestimonials] = useState<TestimonialMedia[]>(() => {
-    const saved = localStorage.getItem('unms_testimonials');
-    return saved ? JSON.parse(saved) : initialTestimonials;
+    return loadLocalList('unms_testimonials', initialTestimonials);
   });
 
   const [campaigns, setCampaigns] = useState<Campaign[]>(() => {
-    const saved = localStorage.getItem('unms_campaigns');
-    return saved ? JSON.parse(saved) : initialCampaigns;
+    return loadLocalList('unms_campaigns', initialCampaigns);
   });
 
   const [notifications, setNotifications] = useState<PushNotification[]>(() => {
-    const saved = localStorage.getItem('unms_notifications');
-    return saved ? JSON.parse(saved) : initialPushNotifications;
+    return loadLocalList('unms_notifications', initialPushNotifications);
   });
 
   const [donations, setDonations] = useState<DonationRecord[]>(() => {
-    const saved = localStorage.getItem('unms_donations');
-    return saved ? JSON.parse(saved) : initialDonations;
+    return loadLocalList('unms_donations', initialDonations);
   });
 
   const [solidarityMessages, setSolidarityMessages] = useState<SolidarityMessage[]>(() => {
-    const saved = localStorage.getItem('unms_solidarity_messages');
-    return saved ? JSON.parse(saved) : initialSolidarityMessages;
+    return loadLocalList('unms_solidarity_messages', initialSolidarityMessages);
   });
 
   const impactStats = initialImpactStats;
@@ -157,6 +162,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // 3. UI states & Modals
   const [activeStoryModal, setActiveStoryModal] = useState<BlogPost | null>(null);
   const [activeMediaModal, setActiveMediaModal] = useState<TestimonialMedia | null>(null);
+  useEffect(() => {
+    const openLinkedStory = () => {
+      const prefix = '#historia-';
+      if (!window.location.hash.startsWith(prefix)) return;
+      const story = blogPosts.find(item => item.id === decodeURIComponent(window.location.hash.slice(prefix.length)));
+      if (story) setActiveStoryModal(story);
+    };
+    openLinkedStory();
+    window.addEventListener('hashchange', openLinkedStory);
+    return () => window.removeEventListener('hashchange', openLinkedStory);
+  }, [blogPosts]);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [donationModalPrefill, setDonationModalPrefill] = useState<{ cause?: string; amount?: number } | null>(null);
 
@@ -171,38 +187,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // 4. Push notifications permission
-  const [pushPermission, setPushPermission] = useState<'default' | 'granted' | 'denied'>(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      return Notification.permission;
-    }
-    return (localStorage.getItem('unms_push_perm') as any) || 'default';
-  });
+  const pushPermission: 'default' | 'granted' | 'denied' = 'default';
 
   const requestPushPermission = async (): Promise<boolean> => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      try {
-        const perm = await Notification.requestPermission();
-        setPushPermission(perm);
-        localStorage.setItem('unms_push_perm', perm);
-        if (perm === 'granted') {
-          showToast(
-            language === 'ar' ? 'تم تفعيل الإشعارات بنجاح!' :
-            language === 'fr' ? 'Notifications activées avec succès !' :
-            language === 'en' ? 'Push alerts enabled successfully!' :
-            '¡Notificaciones push activadas correctamente!',
-            'success'
-          );
-          return true;
-        }
-      } catch (err) {
-        console.warn('Push permission request failed:', err);
-      }
-    }
-    // Fallback simulation
-    setPushPermission('granted');
-    localStorage.setItem('unms_push_perm', 'granted');
-    showToast('¡Notificaciones activadas!', 'success');
-    return true;
+    showToast('Las notificaciones push no están configuradas en esta propuesta.', 'info');
+    return false;
   };
 
   const broadcastNotification = (notif: Omit<PushNotification, 'id' | 'timestamp'>) => {
@@ -214,19 +203,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setNotifications((prev) => [newNotif, ...prev]);
 
-    // Show native browser notification if granted
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification(notif.title[language] || notif.title.es, {
-          body: notif.message[language] || notif.message.es,
-          icon: '/favicon.ico',
-        });
-      } catch (e) {
-        console.warn('Native notification failed:', e);
-      }
-    }
-
-    showToast(`📢 ${notif.title[language] || notif.title.es}`, 'info');
+    showToast(`Vista previa local: ${notif.title[language] || notif.title.es}`, 'info');
   };
 
   const markNotificationAsRead = (id: string) => {
@@ -264,7 +241,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       likes: 1,
     };
     setSolidarityMessages((prev) => [newMsg, ...prev]);
-    showToast('¡Tu mensaje de solidaridad ha sido publicado!', 'success');
+    showToast('Mensaje agregado a esta vista previa en tu navegador.', 'success');
   };
 
   const deleteSolidarityMessage = (id: string) => {
@@ -317,27 +294,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 6. Admin Panel States & Actions
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [adminAuthenticated, setAdminAuthenticated] = useState(() => {
-    return localStorage.getItem('unms_admin_auth') === 'true';
-  });
+  // The editorial panel is an interactive, browser-local prototype.
+  const [adminAuthenticated] = useState(true);
 
-  const loginAdmin = (pass: string) => {
-    // Official passcode is "unms2026"
-    const cleaned = pass.trim();
-    if (cleaned === 'unms2026' || cleaned.toLowerCase() === 'unms2026' || cleaned === 'admin') {
-      setAdminAuthenticated(true);
-      localStorage.setItem('unms_admin_auth', 'true');
-      showToast('Acceso concedido al panel de administración UNMS', 'success');
-      return true;
-    }
-    showToast('Contraseña incorrecta (Clave de acceso: unms2026)', 'warning');
-    return false;
-  };
+  const loginAdmin = (_pass: string) => true;
 
   const logoutAdmin = () => {
-    setAdminAuthenticated(false);
-    localStorage.removeItem('unms_admin_auth');
-    showToast('Sesión de administración cerrada', 'info');
+    setIsAdminOpen(false);
   };
 
   const addBlogPost = (post: Omit<BlogPost, 'id' | 'likes'>) => {
@@ -347,7 +310,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       likes: 0,
     };
     setBlogPosts((prev) => [newPost, ...prev]);
-    showToast('Nueva historia publicada con éxito', 'success');
+    showToast('Historia agregada a esta vista previa local.', 'success');
   };
 
   const updateBlogPost = (post: BlogPost) => {

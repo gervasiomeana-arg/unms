@@ -21,8 +21,8 @@ export const Footer: React.FC = () => {
     e.preventDefault();
     if (!emailSub.trim()) return;
     showToast(
-      t.subscribedMsg[language],
-      'success'
+      language === 'ar' ? 'هذه معاينة: لم يتم تسجيل بريدك الإلكتروني.' : language === 'fr' ? 'Aperçu : votre adresse e-mail n’a pas été enregistrée.' : language === 'en' ? 'Preview: your email address was not registered.' : 'Vista previa: tu correo no fue registrado.',
+      'info'
     );
     setEmailSub('');
   };
@@ -104,7 +104,7 @@ export const Footer: React.FC = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold transition-all"
               >
                 <Heart className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span>{language === 'ar' ? 'مساهمة تضامنية مباشرة' : 'Hacer Donación Solidaria'}</span>
+                <span>{language === 'ar' ? 'استكشاف مقترح الدعم' : language === 'fr' ? 'Explorer le soutien' : language === 'en' ? 'Explore support' : 'Explorar propuesta de apoyo'}</span>
               </button>
             </div>
           </div>
@@ -157,11 +157,11 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>contacto@unms-sahara.org / solidarias@unms.org</span>
+                <span>{language === 'ar' ? 'بيانات الاتصال بانتظار تأكيد المنظمة' : language === 'fr' ? 'Coordonnées en attente de validation' : language === 'en' ? 'Contact details awaiting confirmation' : 'Datos de contacto pendientes de validación'}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Globe className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>Delegaciones: Madrid • Ginebra • Argel • Nueva York</span>
+                <span>{language === 'ar' ? 'المواقع بانتظار التأكيد' : language === 'fr' ? 'Implantations à confirmer' : language === 'en' ? 'Locations to be confirmed' : 'Sedes pendientes de confirmar'}</span>
               </div>
             </div>
           </div>
@@ -184,7 +184,7 @@ export const Footer: React.FC = () => {
             <span>•</span>
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{language === 'ar' ? 'منظمة إنسانية معتمدة' : 'ONG Humanitaria Acreditada'}</span>
+              <span>{language === 'ar' ? 'مقترح قيد التقييم' : language === 'fr' ? 'Projet en cours d’évaluation' : language === 'en' ? 'Proposal under review' : 'Propuesta en evaluación'}</span>
             </span>
           </div>
         </div>

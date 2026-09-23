@@ -238,6 +238,7 @@ export const AdminPanel: React.FC = () => {
         location: currentMedia.location || 'Wilaya de Smara',
         duration: currentMedia.duration || '04:15',
         thumbnailUrl: currentMedia.thumbnailUrl || IMAGES.weaving,
+        mediaUrl: currentMedia.mediaUrl?.trim() || undefined,
         quote: {
           es: quote.es || title.es,
           en: quote.en || quote.es || title.es,
@@ -349,8 +350,8 @@ export const AdminPanel: React.FC = () => {
               <h2 className="text-base sm:text-lg font-bold text-white font-serif">
                 {t.title[language]}
               </h2>
-              <p className="text-xs text-stone-400 hidden sm:block">
-                {t.subtitle[language]}
+              <p className="text-xs text-amber-300">
+                {language === 'ar' ? 'لوحة تجريبية · التغييرات محفوظة في هذا المتصفح فقط' : language === 'fr' ? 'Panneau de démonstration · modifications locales' : language === 'en' ? 'Demo panel · changes are local to this browser' : 'Panel de demostración · cambios solo en este navegador'}
               </p>
             </div>
           </div>
@@ -395,12 +396,12 @@ export const AdminPanel: React.FC = () => {
                 </h3>
                 <p className="text-xs text-stone-400 mt-2">
                   {language === 'ar'
-                    ? 'أدخل رمز المرور المعتمد لإدارة محتوى المنصة (الرمز الرسمي: unms2026)'
+                    ? 'معاينة لوحة الإدارة في هذا المتصفح فقط'
                     : language === 'fr'
-                    ? 'Entrez le mot de passe autorisé pour gérer les contenus (Clé d’accès : unms2026).'
+                    ? 'Aperçu local du panneau de gestion.'
                     : language === 'en'
-                    ? 'Enter the authorized passcode to manage platform content (Passcode: unms2026).'
-                    : 'Introduce la clave de acceso de la organización para gestionar contenidos (Clave de acceso: unms2026).'}
+                    ? 'Local preview of the content panel.'
+                    : 'Vista previa local del panel de contenidos.'}
                 </p>
               </div>
 
@@ -411,12 +412,12 @@ export const AdminPanel: React.FC = () => {
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder={
                     language === 'ar'
-                      ? 'كلمة المرور (unms2026)'
+                      ? 'معاينة'
                       : language === 'fr'
-                      ? 'Mot de passe (unms2026)'
+                      ? 'Aperçu'
                       : language === 'en'
-                      ? 'Passcode (unms2026)'
-                      : 'Clave de acceso (unms2026)'
+                      ? 'Preview'
+                      : 'Vista previa'
                   }
                   className="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-sm text-center text-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 font-mono tracking-wider"
                 />
@@ -524,7 +525,7 @@ export const AdminPanel: React.FC = () => {
                         €{totalDonationsAmount.toLocaleString()}
                       </div>
                       <div className="text-[11px] text-stone-500 mt-1">
-                        {donations.length} donaciones registradas
+                        {donations.length} registros de ejemplo
                       </div>
                     </div>
 
@@ -970,7 +971,7 @@ export const AdminPanel: React.FC = () => {
                       <span>{t.tabs.pushBroadcast[language]}</span>
                     </div>
                     <p className="text-xs text-stone-400 mb-6">
-                      Envía una notificación push instantánea a todos los seguidores y miembros conectados a la plataforma.
+                      Crea una alerta de demostración visible únicamente en este navegador.
                     </p>
 
                     <form onSubmit={handleBroadcast} className="space-y-4">
@@ -1087,7 +1088,7 @@ export const AdminPanel: React.FC = () => {
                         {t.tabs.donations[language]} ({donations.length})
                       </h3>
                       <p className="text-xs text-amber-400 font-semibold mt-0.5">
-                        Total Recaudado: €{totalDonationsAmount.toLocaleString()}
+                        Datos ilustrativos: €{totalDonationsAmount.toLocaleString()}
                       </p>
                     </div>
                     <button
@@ -1559,6 +1560,11 @@ export const AdminPanel: React.FC = () => {
                         </button>
                       ))}
                     </div>
+                  </div>
+                  <div>
+                    <label htmlFor="media-source-url" className="mb-1 block text-xs font-bold text-stone-300">URL del archivo audiovisual (opcional)</label>
+                    <input id="media-source-url" type="url" value={currentMedia.mediaUrl || ''} onChange={(e) => setCurrentMedia({ ...currentMedia, mediaUrl: e.target.value })} placeholder="https://ejemplo.org/archivo.mp4" className="w-full rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
+                    <p className="mt-1 text-[11px] text-stone-400">Sin archivo, se mostrará la imagen y el relato.</p>
                   </div>
 
                   <div className="flex items-center gap-2 pt-2">

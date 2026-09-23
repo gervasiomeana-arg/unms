@@ -111,6 +111,7 @@ export const BlogSection: React.FC = () => {
               <img
                 src={featuredPost.imageUrl}
                 alt={getLocalized(featuredPost.title, language)}
+                loading="lazy"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -211,6 +212,7 @@ export const BlogSection: React.FC = () => {
                     <img
                       src={post.imageUrl}
                       alt={getLocalized(post.title, language)}
+                      loading="lazy"
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

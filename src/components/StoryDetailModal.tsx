@@ -35,7 +35,7 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
   const t = translations.blog;
 
   const handleShare = (platform: string) => {
-    const url = window.location.href;
+    const url = `${window.location.origin}${window.location.pathname}#historia-${story.id}`;
     const title = getLocalized(story.title, language);
     const hashtags = 'MujeresSaharauis,UNMS,SaharaLibre';
 
@@ -90,7 +90,7 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
         );
       }
     } else {
-      setIsPlayingAudio(!isPlayingAudio);
+      showToast(language === 'ar' ? 'القراءة الصوتية غير متاحة في هذا المتصفح.' : language === 'fr' ? 'La lecture audio n’est pas disponible dans ce navigateur.' : language === 'en' ? 'Audio narration is unavailable in this browser.' : 'La narración de audio no está disponible en este navegador.', 'info');
     }
   };
 

@@ -26,8 +26,6 @@ export const Navbar: React.FC = () => {
     unreadNotificationsCount,
     markNotificationAsRead,
     markAllNotificationsAsRead,
-    pushPermission,
-    requestPushPermission,
     openDonationModal,
     setIsAdminOpen,
     adminAuthenticated,
@@ -76,17 +74,17 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-stone-900/95 backdrop-blur-md text-stone-100 border-b border-stone-800 transition-all duration-200">
-      {/* Top micro solidarity ticker */}
-      <div className="bg-amber-700/90 text-amber-50 text-xs py-1 px-4 text-center font-medium flex items-center justify-center gap-2">
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+      {/* Visible proposal status throughout the site */}
+      <div className="bg-[#9E3A24] text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2">
+        <span className="inline-block w-2 h-2 rounded-full bg-amber-300" />
         <span>
           {language === 'ar'
-            ? 'الاتحاد الوطني للنساء الصحراويات (UNMS) - 50 عاماً من الصمود والكرامة والعمل الإنساني'
+            ? 'مقترح قيد التقييم · البيانات والأرقام والوظائف التوضيحية قابلة للتغيير'
             : language === 'fr'
-            ? 'Union Nationale des Femmes Sahraouies (UNMS) - 50 Ans de Résilience et d’Action Humanitaire'
+            ? 'Projet en cours d’évaluation · contenus et chiffres illustratifs'
             : language === 'en'
-            ? 'National Union of Sahrawi Women (UNMS) - 50 Years of Resilience and Humanitarian Action'
-            : 'Unión Nacional de Mujeres Saharauis (UNMS) - 50 Años de Resiliencia, Dignidad y Acción Humanitaria'}
+            ? 'Proposal under review · illustrative content and figures'
+            : 'Propuesta en evaluación · contenido y cifras ilustrativas'}
         </span>
       </div>
 
@@ -262,21 +260,9 @@ export const Navbar: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Notification Permission Prompt if not granted */}
-                    {pushPermission !== 'granted' && (
-                      <div className="p-3 bg-amber-950/40 border-b border-amber-900/50 flex flex-col gap-2">
-                        <p className="text-xs text-amber-200">
-                          {translations.push.bannerDesc[language]}
-                        </p>
-                        <button
-                          onClick={requestPushPermission}
-                          className="w-full py-1.5 px-3 bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                        >
-                          <Volume2 className="w-3.5 h-3.5" />
-                          <span>{translations.push.subscribeBtn[language]}</span>
-                        </button>
-                      </div>
-                    )}
+                    <p className="border-b border-stone-800 px-4 py-2 text-[11px] text-stone-400">
+                      {language === 'ar' ? 'معاينة: الإشعارات تظهر في هذا المتصفح فقط.' : language === 'fr' ? 'Aperçu : les alertes restent dans ce navigateur.' : language === 'en' ? 'Preview: alerts remain in this browser.' : 'Vista previa: las alertas solo aparecen en este navegador.'}
+                    </p>
 
                     {/* Notification List */}
                     <div className="max-h-80 overflow-y-auto divide-y divide-stone-800">

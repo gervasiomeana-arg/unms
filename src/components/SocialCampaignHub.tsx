@@ -41,7 +41,7 @@ export const SocialCampaignHub: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleShareCampaign = (campaign: Campaign, platform: string) => {
-    const url = window.location.href;
+    const url = `${window.location.origin}${window.location.pathname}#campana-${campaign.id}`;
     const title = getLocalized(campaign.title, language);
     const text = `${title} ${campaign.hashtag} - Apoya a la Unión Nacional de Mujeres Saharauis:`;
 
@@ -98,6 +98,9 @@ export const SocialCampaignHub: React.FC = () => {
           <p className="mt-4 text-stone-600 text-base sm:text-lg leading-relaxed">
             {t.subtitle[language]}
           </p>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-amber-900">
+            {language === 'ar' ? 'الحملات والمبالغ أمثلة توضيحية' : language === 'fr' ? 'Campagnes et montants illustratifs' : language === 'en' ? 'Illustrative campaigns and amounts' : 'Campañas e importes ilustrativos'}
+          </p>
         </div>
 
         {/* Active Humanitarian Campaigns Grid */}
@@ -107,6 +110,7 @@ export const SocialCampaignHub: React.FC = () => {
 
             return (
               <motion.div
+                id={`campana-${camp.id}`}
                 key={camp.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -120,6 +124,7 @@ export const SocialCampaignHub: React.FC = () => {
                     <img
                       src={camp.imageUrl}
                       alt={getLocalized(camp.title, language)}
+                      loading="lazy"
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                     />
@@ -166,7 +171,7 @@ export const SocialCampaignHub: React.FC = () => {
                       </div>
 
                       <div className="mt-2 flex items-center justify-between text-[11px] text-stone-500">
-                        <span className="font-bold text-stone-700">{percent}% {language === 'ar' ? 'مكتمل' : 'recaudado'}</span>
+                        <span className="font-bold text-stone-700">{percent}% {language === 'ar' ? 'توضيحي' : language === 'fr' ? 'illustratif' : language === 'en' ? 'illustrative' : 'ilustrativo'}</span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           <span>{camp.daysLeft} {language === 'ar' ? 'يوماً متبقياً' : 'días restantes'}</span>

@@ -1,257 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../context/AppContext';
-import { translations, getLocalized } from '../data/translations';
-import { TestimonialMedia } from '../types';
-import {
-  X,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  MapPin,
-  Calendar,
-  Share2,
-  Check,
-  FileText,
-  Video,
-  Mic,
-  Image as ImageIcon,
-  Quote,
-  Sparkles,
-} from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, MapPin, CalendarDays, Film, Quote } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useApp } from '../context/AppContext';
+import { getLocalized } from '../data/translations';
+import { TestimonialMedia } from '../types';
 
-interface MediaDetailModalProps {
-  media: TestimonialMedia;
-  onClose: () => void;
-}
-
-export const MediaDetailModal: React.FC<MediaDetailModalProps> = ({ media, onClose }) => {
-  const { language, isRTL, showToast } = useApp();
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<'player' | 'transcript'>('player');
-
-  // Convert mm:ss to total seconds
-  const parseDuration = (dur?: string): number => {
-    if (!dur) return 252;
-    const parts = dur.split(':').map((p) => parseInt(p, 10));
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-      return parts[0] * 60 + parts[1];
-    }
-    return 252;
-  };
-
-  const totalDuration = parseDuration(media.duration);
-  const [currentTime, setCurrentTime] = useState(12);
-
+export const MediaDetailModal: React.FC<{ media: TestimonialMedia; onClose: () => void }> = ({ media, onClose }) => {
+  const { language } = useApp();
   useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setInterval(() => {
-      setCurrentTime((prev) => {
-        if (prev >= totalDuration) {
-          setIsPlaying(false);
-          return 0;
-        }
-        return prev + 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [isPlaying, totalDuration]);
-
-  const formatSeconds = (sec: number): string => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const ratio = Math.max(0, Math.min(1, clickX / width));
-    setCurrentTime(Math.round(ratio * totalDuration));
-  };
-
-  const progressPercent = Math.min(100, Math.max(0, (currentTime / totalDuration) * 100));
-
-  const handleCopyShare = () => {
-    navigator.clipboard.writeText(`${getLocalized(media.title, language)} - ${window.location.href}`);
-    setCopied(true);
-    showToast(translations.social.linkCopied[language], 'success');
-    setTimeout(() => setCopied(false), 2500);
-  };
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-stone-950/85 backdrop-blur-md">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-4xl bg-stone-900 text-stone-100 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[92vh] flex flex-col border border-stone-800"
-      >
-        {/* Top Floating Bar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-stone-950 border-b border-stone-800">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
-              {media.type === 'video' && <Video className="w-3.5 h-3.5" />}
-              {media.type === 'audio' && <Mic className="w-3.5 h-3.5" />}
-              {media.type === 'photo_story' && <ImageIcon className="w-3.5 h-3.5" />}
-              <span className="capitalize">{media.type.replace('_', ' ')}</span>
-            </span>
-            <span className="text-xs text-stone-400 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-400" />
-              <span>{media.location}</span>
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleCopyShare}
-              className="p-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 transition-colors"
-              title="Compartir testimonio"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-stone-950/85 p-4 backdrop-blur-md" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
+      <motion.article role="dialog" aria-modal="true" aria-labelledby="media-title" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="my-auto max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-stone-900 text-white shadow-2xl">
+        <div className="relative aspect-video overflow-hidden bg-stone-950">
+          {media.mediaUrl && media.type === 'video'
+            ? <video className="h-full w-full object-contain" src={media.mediaUrl} controls playsInline poster={media.thumbnailUrl} />
+            : <img className="h-full w-full object-cover" src={media.thumbnailUrl} alt={getLocalized(media.title, language)} />}
+          <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 rounded-full bg-stone-950/80 p-2.5 text-white hover:bg-stone-800"><X className="h-5 w-5" /></button>
+          {!media.mediaUrl && <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/20 bg-stone-950/80 px-4 py-3 text-sm backdrop-blur-sm"><Film className="mr-2 inline h-4 w-4 text-amber-400" />{language === 'ar' ? 'المادة السمعية البصرية قيد الإعداد · معاينة للمشروع' : language === 'fr' ? 'Contenu audiovisuel à venir · aperçu du projet' : language === 'en' ? 'Audiovisual material coming soon · project preview' : 'Material audiovisual pendiente · vista previa del proyecto'}</div>}
         </div>
-
-        {/* Scrollable Content */}
-        <div className="overflow-y-auto p-6 sm:p-8 space-y-6">
-          {/* Media Player Showcase Stage */}
-          <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl group flex items-center justify-center">
-            <img
-              src={media.thumbnailUrl}
-              alt={getLocalized(media.title, language)}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover opacity-60 filter brightness-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
-
-            {/* Simulated Live Playback Overlay */}
-            {isPlaying && (
-              <div className="absolute top-4 left-4 rtl:left-auto rtl:right-4 flex items-center gap-2 px-3 py-1 bg-stone-900/90 border border-stone-700 rounded-full text-xs text-amber-400 font-semibold shadow-md">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                <span>{media.type === 'video' ? 'Reproduciendo en Alta Definición' : 'Audio Transmitiendo'}</span>
-              </div>
-            )}
-
-            {/* Center Play/Pause button */}
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="relative z-10 w-20 h-20 rounded-full bg-amber-600/90 hover:bg-amber-500 text-stone-950 flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all"
-            >
-              {isPlaying ? (
-                <Pause className="w-8 h-8 fill-stone-950" />
-              ) : (
-                <Play className={`w-8 h-8 fill-stone-950 ${isRTL ? 'rotate-180' : ''}`} />
-              )}
-            </button>
-
-            {/* Bottom Controls Bar */}
-            <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-stone-950 via-stone-950/80 to-transparent flex items-center justify-between text-xs text-stone-300">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="hover:text-amber-400 transition-colors p-1"
-                >
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                </button>
-                <span className="font-mono text-[11px] text-stone-300">
-                  {formatSeconds(currentTime)} / {formatSeconds(totalDuration)}
-                </span>
-              </div>
-
-              {/* Interactive Progress / Seek bar */}
-              <div
-                onClick={handleSeek}
-                className="flex-1 mx-4 h-2 bg-stone-700/80 hover:h-2.5 rounded-full overflow-hidden cursor-pointer transition-all"
-                title="Avanzar / Retroceder"
-              >
-                <div
-                  className="h-full bg-amber-500 rounded-full transition-all duration-150"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="hover:text-amber-400 transition-colors p-1"
-                >
-                  {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
-                </button>
-                <span className="hidden sm:inline font-mono text-[10px] px-1.5 py-0.5 rounded bg-stone-800 border border-stone-700">1080p HD</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Title and Speaker info */}
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white font-serif">
-              {getLocalized(media.title, language)}
-            </h2>
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-stone-400">
-              <span className="text-amber-400 font-bold text-sm">{media.speaker}</span>
-              <span>•</span>
-              <span className="text-stone-300">{getLocalized(media.speakerRole, language)}</span>
-              <span>•</span>
-              <span>{media.date}</span>
-            </div>
-          </div>
-
-          {/* Quote Banner */}
-          <div className="p-5 rounded-2xl bg-stone-950 border border-stone-800 text-stone-200 flex gap-3 items-start">
-            <Quote className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm sm:text-base font-serif italic leading-relaxed text-amber-100">
-                "{getLocalized(media.quote, language)}"
-              </p>
-              <span className="block mt-2 text-xs font-semibold text-stone-400">
-                — {media.speaker} ({media.location})
-              </span>
-            </div>
-          </div>
-
-          {/* Multilingual Full Transcript Section */}
-          <div className="p-6 rounded-2xl bg-stone-950/60 border border-stone-800">
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">
-              <FileText className="w-4 h-4" />
-              <span>
-                {language === 'ar'
-                  ? 'النص الكامل للشهادة والتسجيل'
-                  : language === 'fr'
-                  ? 'Transcription Complète du Témoignage'
-                  : language === 'en'
-                  ? 'Full Testimonial Transcript'
-                  : 'Transcripción Completa del Testimonio'}
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-stone-300 leading-relaxed whitespace-pre-line">
-              {getLocalized(media.fullTranscript, language)}
-            </p>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            {media.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 bg-stone-800 border border-stone-700 text-stone-300 rounded-lg text-xs"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+        <div className="space-y-6 p-6 sm:p-9">
+          <div className="flex flex-wrap gap-4 text-xs text-amber-300"><span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{media.location}</span><span className="flex items-center gap-1"><CalendarDays className="h-4 w-4" />{media.date}</span></div>
+          <h2 id="media-title" className="font-serif text-2xl leading-tight sm:text-3xl">{getLocalized(media.title, language)}</h2>
+          <p className="text-sm text-stone-300">{media.speaker} · {getLocalized(media.speakerRole, language)}</p>
+          {media.mediaUrl && media.type === 'audio' && <audio src={media.mediaUrl} controls className="w-full" />}
+          <blockquote className="border-l-2 border-amber-500 pl-4 font-serif text-lg italic text-amber-100"><Quote className="mb-2 h-5 w-5 text-amber-400" />{getLocalized(media.quote, language)}</blockquote>
+          <div className="border-t border-stone-700 pt-6"><h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-amber-400">{language === 'ar' ? 'النص' : language === 'fr' ? 'Récit' : language === 'en' ? 'Story' : 'Relato'}</h3><p className="whitespace-pre-line text-sm leading-7 text-stone-300">{getLocalized(media.fullTranscript, language)}</p></div>
         </div>
-      </motion.div>
+      </motion.article>
     </div>
   );
 };

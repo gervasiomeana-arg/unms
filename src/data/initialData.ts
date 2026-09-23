@@ -1,13 +1,19 @@
 import { BlogPost, TestimonialMedia, Campaign, PushNotification, DonationRecord, SolidarityMessage, ImpactStat } from '../types';
+import heroImage from '../assets/images/unms_hero_women_1788306077567.jpg';
+import weavingImage from '../assets/images/unms_cooperative_weaving_1788306089166.jpg';
+import healthImage from '../assets/images/unms_health_clinic_1788306102072.jpg';
+import educationImage from '../assets/images/unms_education_school_1788306112923.jpg';
+import advocacyImage from '../assets/images/unms_un_advocacy_1788306125550.jpg';
+import cultureImage from '../assets/images/unms_culture_tea_1788306136612.jpg';
 
 // Asset paths
 export const IMAGES = {
-  hero: '/src/assets/images/unms_hero_women_1788306077567.jpg',
-  weaving: '/src/assets/images/unms_cooperative_weaving_1788306089166.jpg',
-  health: '/src/assets/images/unms_health_clinic_1788306102072.jpg',
-  education: '/src/assets/images/unms_education_school_1788306112923.jpg',
-  advocacy: '/src/assets/images/unms_un_advocacy_1788306125550.jpg',
-  culture: '/src/assets/images/unms_culture_tea_1788306136612.jpg',
+  hero: heroImage,
+  weaving: weavingImage,
+  health: healthImage,
+  education: educationImage,
+  advocacy: advocacyImage,
+  culture: cultureImage,
 };
 
 export const initialImpactStats: ImpactStat[] = [
@@ -109,12 +115,12 @@ export const initialBlogPosts: BlogPost[] = [
 
 Durante décadas, miles de jóvenes y madres han aprendido no solo a leer y escribir en varios idiomas, sino también habilidades técnicas: mecánica, informática, gestión de proyectos humanitarios, telar tradicional y atención de emergencias sanitarias.
 
-"Cuando construimos la escuela con nuestras propias manos y ladrillos de adobe secados al sol, sabíamos que estábamos cimentando la libertad de nuestro pueblo", relata Fatma Brahim, veterana formadora.`,
+"Cuando construimos la escuela con nuestras propias manos y ladrillos de adobe secados al sol, sabíamos que estábamos cimentando la libertad de nuestro pueblo", relata Equipo editorial (ejemplo), veterana formadora.`,
       en: `In the middle of the Tindouf hamada, one of the harshest deserts on Earth, stands a beacon of dignity: the 27th February Women's School. Established by the National Union of Sahrawi Women shortly after the forced exodus of 1975, it was born with a bold purpose: to ensure that no Sahrawi woman would be left behind in education.
 
 Over decades, thousands of young women and mothers have learned literacy, multiple languages, computing, healthcare assistance, traditional weaving, and community management.
 
-"When we built the school with our own hands and sun-dried adobe bricks, we knew we were laying the foundation of our people's future," recalls Fatma Brahim, a veteran educator.`,
+"When we built the school with our own hands and sun-dried adobe bricks, we knew we were laying the foundation of our people's future," recalls Equipo editorial (ejemplo), a veteran educator.`,
       ar: `في وسط حمادة تندوف، يرتفع صرح الكرامة والتعليم: مدرسة 27 فبراير لتأهيل وتكوين النساء. أسسها الاتحاد الوطني للنساء الصحراويات عقب النزوح القسري عام 1975، بهدف أصيل: ألا تبقى أي امرأة صحراوية في عتمة الأمية.
 
 على مدى عقود، تلقت آلاف الفتيات والأمهات تعليماً متعدد اللغات وتكويناً مهنياً في التمريض، الإعلام الآلي، النسيج التقليدي، وإدارة المشاريع الإنسانية.
@@ -124,7 +130,7 @@ Over decades, thousands of young women and mothers have learned literacy, multip
 
 Des milliers de femmes y ont appris à lire, à écrire et se sont formées aux soins infirmiers, à l’informatique et à l’artisanat.
 
-"Quand nous avons bâti l’école de nos propres mains avec des briques de terre séchées au soleil, nous savions que nous posions les fondations de notre liberté", témoigne Fatma Brahim.`,
+"Quand nous avons bâti l’école de nos propres mains avec des briques de terre séchées au soleil, nous savions que nous posions les fondations de notre liberté", témoigne Equipo editorial (ejemplo).`,
     },
     category: 'education',
     categoryLabel: {
@@ -134,7 +140,7 @@ Des milliers de femmes y ont appris à lire, à écrire et se sont formées aux 
       fr: 'Éducation & Leadership',
     },
     author: {
-      name: 'Fatma Brahim',
+      name: 'Equipo editorial (ejemplo)',
       role: {
         es: 'Directora Pedagógica UNMS',
         en: 'UNMS Pedagogical Director',
@@ -190,7 +196,7 @@ Through mobile medical units and partnerships with international humanitarian NG
       fr: 'Santé & Nutrition',
     },
     author: {
-      name: 'Dra. Mariam Salek',
+      name: 'Equipo editorial (ejemplo)',
       role: {
         es: 'Coordinadora de Salud Materna UNMS',
         en: 'UNMS Maternal Health Coordinator',
@@ -246,7 +252,7 @@ In UNMS workshops across El Aaiun and Dakhla camps, women dye fabrics, embroider
       fr: 'Coopératives & Artisanat',
     },
     author: {
-      name: 'Khadija Mohamed',
+      name: 'Equipo editorial (ejemplo)',
       role: {
         es: 'Maestra Artesana de la Wilaya de Dajla',
         en: 'Master Artisan, Dakhla Camp',
@@ -300,7 +306,7 @@ Presenting documented reports on human rights violations and testimonies from vi
       fr: 'Droits Humains & Diplomatie',
     },
     author: {
-      name: 'Salka Embarek',
+      name: 'Equipo editorial (ejemplo)',
       role: {
         es: 'Secretaria de Relaciones Internacionales UNMS',
         en: 'UNMS International Relations Secretary',
@@ -356,7 +362,7 @@ Gathered around glowing embers inside the tent, grandmothers pass down oral epic
       fr: 'Culture & Tradition',
     },
     author: {
-      name: 'Salma Sidahmed',
+      name: 'Equipo editorial (ejemplo)',
       role: {
         es: 'Poeta y Archivista de Memoria Oral UNMS',
         en: 'Poet & Oral Archive Curator UNMS',
@@ -390,7 +396,7 @@ export const initialTestimonials: TestimonialMedia[] = [
       ar: 'بناء المؤسسات في اللجوء: 50 عاماً من القيادة النسائية في المخيمات',
       fr: 'Bâtir une République en Exil : 50 Ans de Gouvernance Féminine',
     },
-    speaker: 'Chaba Seini',
+    speaker: 'Testimonio ilustrativo',
     speakerRole: {
       es: 'Secretaria General de la UNMS',
       en: 'Secretary General of UNMS',
@@ -431,7 +437,7 @@ Today, over 70% of teaching and healthcare roles in the camps are held by univer
       ar: 'من الخيمة إلى غرفة العمليات: رسالة إنقاذ الأرواح في عمق الصحراء',
       fr: 'De la Tente au Bloc Opératoire : Sauver des Vies dans le Désert',
     },
-    speaker: 'Dra. Najat Mohamed',
+    speaker: 'Testimonio ilustrativo',
     speakerRole: {
       es: 'Especialista en Ginecología y Salud Materna en Campamentos',
       en: 'Gynecology & Maternal Health Specialist in Camps',
@@ -468,7 +474,7 @@ El compromiso de las enfermeras saharauis es inigualable: no hay descanso cuando
       ar: 'بودكاست: أناشيد الصمود والشعر الحساني بأصوات الجدات الصحراويات',
       fr: 'Podcast : Chants de Résistance et Poésie des Grands-mères Sahraouies',
     },
-    speaker: 'Mariem Hassan & Colectivo de Cantoras',
+    speaker: 'Colectivo cultural (ejemplo)',
     speakerRole: {
       es: 'Preservadoras del Canto Tradicional Haul',
       en: 'Custodians of Haul Traditional Sahrawi Chants',
@@ -620,7 +626,7 @@ export const initialPushNotifications: PushNotification[] = [
     },
     timestamp: 'Hace 2 horas',
     type: 'urgent',
-    actionUrl: '#donaciones',
+    actionUrl: '#campanas-solidaridad',
     read: false,
   },
   {
@@ -639,7 +645,7 @@ export const initialPushNotifications: PushNotification[] = [
     },
     timestamp: 'Ayer',
     type: 'news',
-    actionUrl: '#blog',
+    actionUrl: '#historias-blog',
     read: true,
   },
   {
@@ -658,82 +664,42 @@ export const initialPushNotifications: PushNotification[] = [
     },
     timestamp: 'Hace 3 días',
     type: 'event',
-    actionUrl: '#campanas',
+    actionUrl: '#campanas-solidaridad',
     read: true,
   },
 ];
 
-export const initialDonations: DonationRecord[] = [
-  {
-    id: 'DON-2026-0891',
-    donorName: 'Asociación Amigos del Pueblo Saharaui de Madrid',
-    email: 'contacto@amigosahara.org',
-    amount: 500,
-    currency: 'EUR',
-    frequency: 'one_time',
-    cause: 'health',
-    date: '2026-08-30',
-    paymentMethod: 'bank_transfer',
-    certificateId: 'CERT-UNMS-99824',
-    message: 'Toda nuestra admiración y apoyo incondicional a las valientes mujeres de la UNMS.',
-  },
-  {
-    id: 'DON-2026-0892',
-    donorName: 'Elena V. Martínez',
-    email: 'elena.vm@example.com',
-    amount: 60,
-    currency: 'EUR',
-    frequency: 'monthly',
-    cause: 'education',
-    date: '2026-08-28',
-    paymentMethod: 'card',
-    certificateId: 'CERT-UNMS-99825',
-    message: 'Por la educación y futuro de las niñas saharauis en la Escuela 27 de Febrero.',
-  },
-  {
-    id: 'DON-2026-0893',
-    donorName: 'Collectif Solidarité Sahraouie Paris',
-    email: 'paris.sahara@example.fr',
-    amount: 250,
-    currency: 'EUR',
-    frequency: 'one_time',
-    cause: 'cooperatives',
-    date: '2026-08-25',
-    paymentMethod: 'paypal',
-    certificateId: 'CERT-UNMS-99826',
-    message: 'Soutien fraternel aux coopératives artisanales de Smara et Dakhla.',
-  },
-];
+export const initialDonations: DonationRecord[] = [];
 
 export const initialSolidarityMessages: SolidarityMessage[] = [
   {
     id: 'msg-1',
-    author: 'Clara & Red Feminista Internacional',
-    country: 'España / Valencia',
+    author: 'Mensaje ilustrativo 1',
+    country: 'Comunidad internacional',
     message: 'El ejemplo de organización, dignidad y resistencia pacífica de las mujeres saharauis es una inspiración para el feminismo de todo el mundo. ¡Sahara Libre!',
     date: '2026-08-31',
     likes: 42,
   },
   {
     id: 'msg-2',
-    author: 'Amina Mansouri',
-    country: 'Argelia / Argel',
+    author: 'Mensaje ilustrativo 2',
+    country: 'Comunidad internacional',
     message: 'تحية إجلال وإكبار للمرأة الصحراوية الصامدة في مخيمات العزة والكرامة. أنتن فخر الأمة ورمز الشجاعة.',
     date: '2026-08-29',
     likes: 38,
   },
   {
     id: 'msg-3',
-    author: 'Dr. John Henderson (Refugee Relief Org)',
-    country: 'United Kingdom / London',
+    author: 'Mensaje ilustrativo 3',
+    country: 'Comunidad internacional',
     message: 'The resilience and democratic community management demonstrated by UNMS in Tindouf is an extraordinary global benchmark for human dignity.',
     date: '2026-08-26',
     likes: 29,
   },
   {
     id: 'msg-4',
-    author: 'Sophie Dubois',
-    country: 'France / Lyon',
+    author: 'Mensaje ilustrativo 4',
+    country: 'Comunidad internacional',
     message: 'Bravo pour votre travail admirable dans l’éducation et les soins de santé maternelle. Nous restons à vos côtés jusqu’à la liberté.',
     date: '2026-08-22',
     likes: 31,

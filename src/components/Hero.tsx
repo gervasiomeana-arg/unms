@@ -21,12 +21,13 @@ export const Hero: React.FC = () => {
   const featuredVideo = testimonials.find((item) => item.featured) || testimonials[0];
 
   return (
-    <section className="relative overflow-hidden bg-stone-950 text-white pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-stone-800">
+    <section id="inicio" className="relative overflow-hidden bg-stone-950 text-white pt-10 pb-20 lg:pt-20 lg:pb-28 border-b border-stone-800">
       {/* Background with layered desert gradient & authentic photo */}
       <div className="absolute inset-0 z-0">
         <img
           src={IMAGES.hero}
-          alt="Mujeres Saharauis UNMS"
+          alt="Imagen ilustrativa de la propuesta UNMS"
+          fetchPriority="high"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center opacity-25 filter saturate-125 scale-105 transform hover:scale-100 transition-transform duration-1000"
         />
@@ -113,7 +114,7 @@ export const Hero: React.FC = () => {
                   id="hero-watch-testimony-btn"
                 >
                   <PlayCircle className="w-4 h-4 text-amber-400" />
-                  <span>{t.watchTestimonials[language]}</span>
+                  <span>{featuredVideo.mediaUrl ? t.watchTestimonials[language] : language === 'ar' ? 'اكتشف القصة' : language === 'fr' ? 'Découvrir le récit' : language === 'en' ? 'Explore the story' : 'Conocer el relato'}</span>
                 </button>
               )}
             </motion.div>
@@ -124,12 +125,12 @@ export const Hero: React.FC = () => {
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>
                   {language === 'ar'
-                    ? 'منظمة معترف بها دولياً'
+                    ? 'محتوى المقترح قيد التقييم'
                     : language === 'fr'
-                    ? 'ONG reconnue internationalement'
+                    ? 'Contenu à valider'
                     : language === 'en'
-                    ? 'Internationally recognized NGO'
-                    : 'ONG reconocida internacionalmente'}
+                    ? 'Content pending validation'
+                    : 'Contenido pendiente de validar'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -171,7 +172,8 @@ export const Hero: React.FC = () => {
               <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-stone-950">
                 <img
                   src={IMAGES.weaving}
-                  alt="Cooperativa Textil de Mujeres Saharauis"
+                  alt="Imagen ilustrativa de un proyecto de artesanía"
+                  loading="lazy"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
