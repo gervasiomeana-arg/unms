@@ -35,7 +35,7 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
   const t = translations.blog;
 
   const handleShare = (platform: string) => {
-    const url = window.location.href;
+    const url = `${window.location.origin}${window.location.pathname}#historia-${story.id}`;
     const title = getLocalized(story.title, language);
     const hashtags = 'MujeresSaharauis,UNMS,SaharaLibre';
 
@@ -56,12 +56,15 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
   };
 
   useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', closeOnEscape);
     return () => {
+      document.removeEventListener('keydown', closeOnEscape);
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [onClose]);
 
   const toggleAudio = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -90,13 +93,16 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
         );
       }
     } else {
-      setIsPlayingAudio(!isPlayingAudio);
+      showToast(language === 'ar' ? 'القراءة الصوتية غير متاحة في هذا المتصفح.' : language === 'fr' ? 'La lecture audio n’est pas disponible dans ce navigateur.' : language === 'en' ? 'Audio narration is unavailable in this browser.' : 'La narración de audio no está disponible en este navegador.', 'info');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-stone-950/80 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-stone-950/80 backdrop-blur-md" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="story-modal-title"
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -171,9 +177,9 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-900 font-serif leading-tight">
+          <h2 id="story-modal-title" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-900 font-serif leading-tight">
             {getLocalized(story.title, language)}
-          </h1>
+          </h2>
 
           {/* Metadata bar */}
           <div className="flex flex-wrap items-center gap-4 text-xs text-stone-500 mt-4 pb-4 border-b border-stone-200">

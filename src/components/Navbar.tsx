@@ -26,8 +26,6 @@ export const Navbar: React.FC = () => {
     unreadNotificationsCount,
     markNotificationAsRead,
     markAllNotificationsAsRead,
-    pushPermission,
-    requestPushPermission,
     openDonationModal,
     setIsAdminOpen,
     adminAuthenticated,
@@ -68,7 +66,7 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -80;
+      const yOffset = -112;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -76,27 +74,29 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-stone-900/95 backdrop-blur-md text-stone-100 border-b border-stone-800 transition-all duration-200">
-      {/* Top micro solidarity ticker */}
-      <div className="bg-amber-700/90 text-amber-50 text-xs py-1 px-4 text-center font-medium flex items-center justify-center gap-2">
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+      {/* Visible proposal status throughout the site */}
+      <div className="bg-[#9E3A24] text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2">
+        <span className="inline-block w-2 h-2 rounded-full bg-amber-300" />
         <span>
           {language === 'ar'
-            ? 'الاتحاد الوطني للنساء الصحراويات (UNMS) - 50 عاماً من الصمود والكرامة والعمل الإنساني'
+            ? 'مقترح قيد التقييم · البيانات والأرقام والوظائف التوضيحية قابلة للتغيير'
             : language === 'fr'
-            ? 'Union Nationale des Femmes Sahraouies (UNMS) - 50 Ans de Résilience et d’Action Humanitaire'
+            ? 'Projet en cours d’évaluation · contenus et chiffres illustratifs'
             : language === 'en'
-            ? 'National Union of Sahrawi Women (UNMS) - 50 Years of Resilience and Humanitarian Action'
-            : 'Unión Nacional de Mujeres Saharauis (UNMS) - 50 Años de Resiliencia, Dignidad y Acción Humanitaria'}
+            ? 'Proposal under review · illustrative content and figures'
+            : 'Propuesta en evaluación · contenido y cifras ilustrativas'}
         </span>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex min-w-0 items-center justify-between gap-2 h-18 sm:h-20">
           {/* Logo & Brand */}
-          <div
+          <button
+            type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-3 cursor-pointer group select-none"
+            className="flex min-w-0 items-center gap-2 sm:gap-3 cursor-pointer group select-none text-left"
             id="nav-logo-btn"
+            aria-label="UNMS · volver al inicio"
           >
             {/* Elegant emblem */}
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-stone-900 flex items-center justify-center p-0.5 shadow-md shadow-amber-900/20 group-hover:scale-105 transition-transform">
@@ -119,7 +119,7 @@ export const Navbar: React.FC = () => {
                 {t.home[language]} • {translations.hero.titleMain[language]}
               </span>
             </div>
-          </div>
+          </button>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
@@ -161,7 +161,7 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Action Tools: Language, Push Notifications, Donate, Admin */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
             {/* Language Selector Dropdown */}
             <div className="relative" ref={langRef}>
               <button
@@ -239,9 +239,9 @@ export const Navbar: React.FC = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className={`absolute ${
-                      isRTL ? 'left-0' : 'right-0'
-                    } mt-2 w-80 sm:w-96 bg-stone-900 border border-stone-700 rounded-xl shadow-2xl z-50 overflow-hidden`}
+                    className={`fixed inset-x-3 top-28 sm:absolute sm:inset-x-auto sm:top-auto ${
+                      isRTL ? 'sm:left-0' : 'sm:right-0'
+                    } sm:mt-2 w-auto sm:w-96 bg-stone-900 border border-stone-700 rounded-xl shadow-2xl z-50 overflow-hidden`}
                   >
                     {/* Header */}
                     <div className="px-4 py-3 bg-stone-950/80 border-b border-stone-800 flex items-center justify-between">
@@ -262,21 +262,9 @@ export const Navbar: React.FC = () => {
                       )}
                     </div>
 
-                    {/* Notification Permission Prompt if not granted */}
-                    {pushPermission !== 'granted' && (
-                      <div className="p-3 bg-amber-950/40 border-b border-amber-900/50 flex flex-col gap-2">
-                        <p className="text-xs text-amber-200">
-                          {translations.push.bannerDesc[language]}
-                        </p>
-                        <button
-                          onClick={requestPushPermission}
-                          className="w-full py-1.5 px-3 bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                        >
-                          <Volume2 className="w-3.5 h-3.5" />
-                          <span>{translations.push.subscribeBtn[language]}</span>
-                        </button>
-                      </div>
-                    )}
+                    <p className="border-b border-stone-800 px-4 py-2 text-[11px] text-stone-400">
+                      {language === 'ar' ? 'معاينة: الإشعارات تظهر في هذا المتصفح فقط.' : language === 'fr' ? 'Aperçu : les alertes restent dans ce navigateur.' : language === 'en' ? 'Preview: alerts remain in this browser.' : 'Vista previa: las alertas solo aparecen en este navegador.'}
+                    </p>
 
                     {/* Notification List */}
                     <div className="max-h-80 overflow-y-auto divide-y divide-stone-800">
@@ -332,7 +320,7 @@ export const Navbar: React.FC = () => {
             {/* Admin Panel Quick Access Button */}
             <button
               onClick={() => setIsAdminOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-stone-800/90 hover:bg-stone-700 text-stone-300 hover:text-amber-300 border border-stone-700 text-xs font-medium transition-colors"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-stone-800/90 hover:bg-stone-700 text-stone-300 hover:text-amber-300 border border-stone-700 text-xs font-medium transition-colors"
               id="nav-admin-btn"
               title="Panel de Administración"
             >
@@ -343,7 +331,7 @@ export const Navbar: React.FC = () => {
             {/* Main Donate Button */}
             <button
               onClick={() => openDonationModal()}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-md shadow-amber-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-bold text-xs sm:text-sm shadow-md shadow-amber-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
               id="nav-donate-cta"
             >
               <Heart className="w-4 h-4 text-stone-950 fill-stone-950" />
@@ -356,6 +344,7 @@ export const Navbar: React.FC = () => {
               className="lg:hidden p-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200"
               id="mobile-menu-toggle-btn"
               aria-label="Abrir menú de navegación"
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

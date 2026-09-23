@@ -217,8 +217,9 @@ export const AdminPanel: React.FC = () => {
       fr: 'Porte-parole communautaire',
     };
 
+    const photoUrls = currentMedia.type === 'photo_story' ? currentMedia.photoUrls?.map(url => url.trim()).filter(Boolean) : undefined;
     if (currentMedia.id) {
-      updateTestimonial(currentMedia as TestimonialMedia);
+      updateTestimonial({ ...currentMedia, photoUrls, mediaUrl: currentMedia.mediaUrl?.trim() || undefined } as TestimonialMedia);
     } else {
       addTestimonial({
         type: currentMedia.type || 'video',
@@ -238,6 +239,8 @@ export const AdminPanel: React.FC = () => {
         location: currentMedia.location || 'Wilaya de Smara',
         duration: currentMedia.duration || '04:15',
         thumbnailUrl: currentMedia.thumbnailUrl || IMAGES.weaving,
+        mediaUrl: currentMedia.mediaUrl?.trim() || undefined,
+        photoUrls,
         quote: {
           es: quote.es || title.es,
           en: quote.en || quote.es || title.es,
@@ -349,8 +352,8 @@ export const AdminPanel: React.FC = () => {
               <h2 className="text-base sm:text-lg font-bold text-white font-serif">
                 {t.title[language]}
               </h2>
-              <p className="text-xs text-stone-400 hidden sm:block">
-                {t.subtitle[language]}
+              <p className="text-xs text-amber-300">
+                {language === 'ar' ? 'لوحة تجريبية · التغييرات محفوظة في هذا المتصفح فقط' : language === 'fr' ? 'Panneau de démonstration · modifications locales' : language === 'en' ? 'Demo panel · changes are local to this browser' : 'Panel de demostración · cambios solo en este navegador'}
               </p>
             </div>
           </div>
@@ -362,7 +365,7 @@ export const AdminPanel: React.FC = () => {
                 className="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <Unlock className="w-3.5 h-3.5 text-amber-400" />
-                <span>{language === 'ar' ? 'تسجيل الخروج' : 'Cerrar Sesión'}</span>
+                <span>{language === 'ar' ? 'إغلاق اللوحة' : language === 'fr' ? 'Fermer' : language === 'en' ? 'Close panel' : 'Cerrar panel'}</span>
               </button>
             )}
             <button
@@ -395,12 +398,12 @@ export const AdminPanel: React.FC = () => {
                 </h3>
                 <p className="text-xs text-stone-400 mt-2">
                   {language === 'ar'
-                    ? 'أدخل رمز المرور المعتمد لإدارة محتوى المنصة (الرمز الرسمي: unms2026)'
+                    ? 'معاينة لوحة الإدارة في هذا المتصفح فقط'
                     : language === 'fr'
-                    ? 'Entrez le mot de passe autorisé pour gérer les contenus (Clé d’accès : unms2026).'
+                    ? 'Aperçu local du panneau de gestion.'
                     : language === 'en'
-                    ? 'Enter the authorized passcode to manage platform content (Passcode: unms2026).'
-                    : 'Introduce la clave de acceso de la organización para gestionar contenidos (Clave de acceso: unms2026).'}
+                    ? 'Local preview of the content panel.'
+                    : 'Vista previa local del panel de contenidos.'}
                 </p>
               </div>
 
@@ -411,12 +414,12 @@ export const AdminPanel: React.FC = () => {
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder={
                     language === 'ar'
-                      ? 'كلمة المرور (unms2026)'
+                      ? 'معاينة'
                       : language === 'fr'
-                      ? 'Mot de passe (unms2026)'
+                      ? 'Aperçu'
                       : language === 'en'
-                      ? 'Passcode (unms2026)'
-                      : 'Clave de acceso (unms2026)'
+                      ? 'Preview'
+                      : 'Vista previa'
                   }
                   className="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-sm text-center text-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 font-mono tracking-wider"
                 />
@@ -438,7 +441,7 @@ export const AdminPanel: React.FC = () => {
             /* ================= AUTHENTICATED ADMIN DASHBOARD ================= */
             <div className="space-y-6">
               {/* Navigation Tabs Bar */}
-              <div className="flex flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
+              <div className="admin-tabs flex flex-nowrap overflow-x-auto sm:flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
@@ -524,7 +527,7 @@ export const AdminPanel: React.FC = () => {
                         €{totalDonationsAmount.toLocaleString()}
                       </div>
                       <div className="text-[11px] text-stone-500 mt-1">
-                        {donations.length} donaciones registradas
+                        {donations.length} registros de ejemplo
                       </div>
                     </div>
 
@@ -970,7 +973,7 @@ export const AdminPanel: React.FC = () => {
                       <span>{t.tabs.pushBroadcast[language]}</span>
                     </div>
                     <p className="text-xs text-stone-400 mb-6">
-                      Envía una notificación push instantánea a todos los seguidores y miembros conectados a la plataforma.
+                      Crea una alerta de demostración visible únicamente en este navegador.
                     </p>
 
                     <form onSubmit={handleBroadcast} className="space-y-4">
@@ -1087,7 +1090,7 @@ export const AdminPanel: React.FC = () => {
                         {t.tabs.donations[language]} ({donations.length})
                       </h3>
                       <p className="text-xs text-amber-400 font-semibold mt-0.5">
-                        Total Recaudado: €{totalDonationsAmount.toLocaleString()}
+                        Datos ilustrativos: €{totalDonationsAmount.toLocaleString()}
                       </p>
                     </div>
                     <button
@@ -1462,7 +1465,7 @@ export const AdminPanel: React.FC = () => {
                       <select
                         value={currentMedia.type || 'video'}
                         onChange={(e) =>
-                          setCurrentMedia({ ...currentMedia, type: e.target.value as any })
+                          setCurrentMedia({ ...currentMedia, type: e.target.value as TestimonialMedia['type'] })
                         }
                         className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
                       >
@@ -1483,7 +1486,7 @@ export const AdminPanel: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-stone-300 mb-1">Duración (mm:ss)</label>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Duración o cantidad de fotos</label>
                       <input
                         type="text"
                         value={currentMedia.duration || '04:12'}
@@ -1559,6 +1562,16 @@ export const AdminPanel: React.FC = () => {
                         </button>
                       ))}
                     </div>
+                  </div>
+                  {currentMedia.type === 'photo_story' && <div>
+                    <label htmlFor="media-photo-urls" className="mb-1 block text-xs font-bold text-stone-300">Fotos de la galería (una URL o ruta por línea)</label>
+                    <textarea id="media-photo-urls" rows={4} value={(currentMedia.photoUrls || []).join('\n')} onChange={(e) => setCurrentMedia({ ...currentMedia, photoUrls: e.target.value.split('\n') })} placeholder="https://ejemplo.org/foto-1.jpg" className="w-full resize-y rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
+                    <p className="mt-1 text-[11px] text-stone-400">Si no añades fotos, se mostrará solo la portada.</p>
+                  </div>}
+                  <div>
+                    <label htmlFor="media-source-url" className="mb-1 block text-xs font-bold text-stone-300">URL del archivo audiovisual (opcional)</label>
+                    <input id="media-source-url" type="text" value={currentMedia.mediaUrl || ''} onChange={(e) => setCurrentMedia({ ...currentMedia, mediaUrl: e.target.value })} placeholder="https://ejemplo.org/archivo.mp4 o /media/video.mp4" className="w-full rounded-xl border border-stone-700 bg-stone-950 px-3.5 py-2.5 text-xs text-white" />
+                    <p className="mt-1 text-[11px] text-stone-400">Usa el enlace directo a un archivo MP4/WebM o audio; una página de YouTube no es un archivo reproducible aquí. Sin archivo se mostrará la imagen y el relato.</p>
                   </div>
 
                   <div className="flex items-center gap-2 pt-2">

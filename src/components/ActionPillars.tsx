@@ -107,6 +107,7 @@ export const ActionPillars: React.FC = () => {
                   <img
                     src={pillar.image}
                     alt={getLocalized(pillar.title, language)}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -174,6 +175,7 @@ export const ActionPillars: React.FC = () => {
                   <img
                     src={pillar.image}
                     alt={getLocalized(pillar.title, language)}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

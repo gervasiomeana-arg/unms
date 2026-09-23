@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ImpactStats } from './components/ImpactStats';
 import { ActionPillars } from './components/ActionPillars';
 import { BlogSection } from './components/BlogSection';
-import { StoryDetailModal } from './components/StoryDetailModal';
 import { AudiovisualGallery } from './components/AudiovisualGallery';
-import { MediaDetailModal } from './components/MediaDetailModal';
 import { SocialCampaignHub } from './components/SocialCampaignHub';
-import { DonationSystem } from './components/DonationSystem';
-import { AdminPanel } from './components/AdminPanel';
 import { Footer } from './components/Footer';
 import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle2, AlertTriangle, Info } from 'lucide-react';
 
+const StoryDetailModal = lazy(() => import('./components/StoryDetailModal').then(m => ({ default: m.StoryDetailModal })));
+const MediaDetailModal = lazy(() => import('./components/MediaDetailModal').then(m => ({ default: m.MediaDetailModal })));
+const DonationSystem = lazy(() => import('./components/DonationSystem').then(m => ({ default: m.DonationSystem })));
+const AdminPanel = lazy(() => import('./components/AdminPanel').then(m => ({ default: m.AdminPanel })));
+
 const MainLayout: React.FC = () => {
-  const { activeStoryModal, setActiveStoryModal, activeMediaModal, setActiveMediaModal, toast, isRTL } = useApp();
+  const { activeStoryModal, setActiveStoryModal, activeMediaModal, setActiveMediaModal, isDonationModalOpen, isAdminOpen, toast, isRTL } = useApp();
 
   return (
     <div className="min-h-screen bg-[#FAF6EE] text-stone-900 font-sans selection:bg-amber-500 selection:text-stone-950 flex flex-col">
@@ -37,8 +38,10 @@ const MainLayout: React.FC = () => {
       <Footer />
 
       {/* Global Modals & Overlays */}
-      <DonationSystem />
-      <AdminPanel />
+      <Suspense fallback={null}>
+        {isDonationModalOpen && <DonationSystem />}
+        {isAdminOpen && <AdminPanel />}
+      </Suspense>
 
       {/* Global Floating Toast */}
       <AnimatePresence>
@@ -48,6 +51,8 @@ const MainLayout: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
+            role="status"
+            aria-live="polite"
             className={`fixed bottom-6 ${
               isRTL ? 'left-6' : 'right-6'
             } z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md border text-sm font-semibold max-w-md ${
@@ -66,23 +71,23 @@ const MainLayout: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
+      <Suspense fallback={null}><AnimatePresence>
         {activeStoryModal && (
           <StoryDetailModal
             story={activeStoryModal}
             onClose={() => setActiveStoryModal(null)}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence></Suspense>
 
-      <AnimatePresence>
+      <Suspense fallback={null}><AnimatePresence>
         {activeMediaModal && (
           <MediaDetailModal
             media={activeMediaModal}
             onClose={() => setActiveMediaModal(null)}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence></Suspense>
     </div>
   );
 };

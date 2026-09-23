@@ -67,29 +67,43 @@
   background: #9E3A24;
 }
 
-/* Print optimization for official donation certificates */
-@media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-  }
-  body * {
-    visibility: hidden;
-  }
-  #donation-certificate-printable,
-  #donation-certificate-printable * {
-    visibility: visible;
-  }
-  #donation-certificate-printable {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 32px;
-    box-shadow: none !important;
-    background: #ffffff !important;
-    border: 2px solid #b45309 !important;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 7rem;
+}
+
+body {
+  background: #FAF6EE;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid #d48b38;
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #d48b38;
+  color: #1c1917;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
   }
 }
 
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px;
+  }
+  .admin-tabs > button, .blog-filters > button {
+    flex-shrink: 0;
+  }
+}

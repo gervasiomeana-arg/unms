@@ -144,6 +144,9 @@ export const ImpactStats: React.FC = () => {
           <p className="mt-4 text-stone-600 text-base sm:text-lg leading-relaxed">
             {t.subtitle[language]}
           </p>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-amber-900">
+            {language === 'ar' ? 'الأرقام أدناه توضيحية وبانتظار التحقق' : language === 'fr' ? 'Chiffres indicatifs, à valider avec l’organisation' : language === 'en' ? 'Illustrative figures, pending validation' : 'Cifras ilustrativas, pendientes de validación'}
+          </p>
         </div>
 
         {/* 4 Large Impact Stats Cards */}
