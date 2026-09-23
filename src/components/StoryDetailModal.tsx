@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { translations, getLocalized } from '../data/translations';
 import { BlogPost } from '../types';
@@ -55,19 +55,42 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({ story, onClo
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const toggleAudio = () => {
-    setIsPlayingAudio(!isPlayingAudio);
-    if (!isPlayingAudio) {
-      showToast(
-        language === 'ar'
-          ? 'بدء تشغيل السرد الصوتي للقصة'
-          : language === 'fr'
-          ? 'Lecture du récit audio en cours'
-          : language === 'en'
-          ? 'Playing story audio narration'
-          : 'Reproduciendo narración de audio',
-        'info'
-      );
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      if (isPlayingAudio) {
+        window.speechSynthesis.cancel();
+        setIsPlayingAudio(false);
+      } else {
+        window.speechSynthesis.cancel();
+        const textToRead = `${getLocalized(story.title, language)}. ${getLocalized(story.summary, language)}. ${getLocalized(story.content, language)}`;
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = language === 'ar' ? 'ar-SA' : language === 'fr' ? 'fr-FR' : language === 'en' ? 'en-US' : 'es-ES';
+        utterance.rate = 0.95;
+        utterance.onend = () => setIsPlayingAudio(false);
+        utterance.onerror = () => setIsPlayingAudio(false);
+        window.speechSynthesis.speak(utterance);
+        setIsPlayingAudio(true);
+        showToast(
+          language === 'ar'
+            ? 'بدء تشغيل السرد الصوتي للقصة'
+            : language === 'fr'
+            ? 'Lecture du récit audio en cours'
+            : language === 'en'
+            ? 'Playing story audio narration'
+            : 'Reproduciendo narración de audio',
+          'info'
+        );
+      }
+    } else {
+      setIsPlayingAudio(!isPlayingAudio);
     }
   };
 

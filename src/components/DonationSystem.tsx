@@ -181,7 +181,10 @@ export const DonationSystem: React.FC = () => {
               </div>
 
               {/* Printable Official Certificate Card */}
-              <div className="bg-[#FAF6EE] p-6 sm:p-8 rounded-3xl border-2 border-dashed border-amber-400 text-left rtl:text-right relative overflow-hidden shadow-sm">
+              <div
+                id="donation-certificate-printable"
+                className="bg-[#FAF6EE] p-6 sm:p-8 rounded-3xl border-2 border-dashed border-amber-400 text-left rtl:text-right relative overflow-hidden shadow-sm"
+              >
                 <div className="flex items-center justify-between pb-4 border-b border-amber-300">
                   <div>
                     <span className="text-[10px] uppercase tracking-widest text-amber-800 font-bold block">

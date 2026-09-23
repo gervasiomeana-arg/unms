@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { translations, getLocalized } from '../data/translations';
 import { TestimonialMedia } from '../types';
@@ -32,6 +32,49 @@ export const MediaDetailModal: React.FC<MediaDetailModalProps> = ({ media, onClo
   const [isMuted, setIsMuted] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'player' | 'transcript'>('player');
+
+  // Convert mm:ss to total seconds
+  const parseDuration = (dur?: string): number => {
+    if (!dur) return 252;
+    const parts = dur.split(':').map((p) => parseInt(p, 10));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return parts[0] * 60 + parts[1];
+    }
+    return 252;
+  };
+
+  const totalDuration = parseDuration(media.duration);
+  const [currentTime, setCurrentTime] = useState(12);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = setInterval(() => {
+      setCurrentTime((prev) => {
+        if (prev >= totalDuration) {
+          setIsPlaying(false);
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isPlaying, totalDuration]);
+
+  const formatSeconds = (sec: number): string => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const ratio = Math.max(0, Math.min(1, clickX / width));
+    setCurrentTime(Math.round(ratio * totalDuration));
+  };
+
+  const progressPercent = Math.min(100, Math.max(0, (currentTime / totalDuration) * 100));
 
   const handleCopyShare = () => {
     navigator.clipboard.writeText(`${getLocalized(media.title, language)} - ${window.location.href}`);
@@ -117,26 +160,35 @@ export const MediaDetailModal: React.FC<MediaDetailModalProps> = ({ media, onClo
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="hover:text-amber-400 transition-colors"
+                  className="hover:text-amber-400 transition-colors p-1"
                 >
                   {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 </button>
-                <span>{media.duration || '04:12'}</span>
+                <span className="font-mono text-[11px] text-stone-300">
+                  {formatSeconds(currentTime)} / {formatSeconds(totalDuration)}
+                </span>
               </div>
 
-              {/* Progress bar simulation */}
-              <div className="flex-1 mx-4 h-1.5 bg-stone-700 rounded-full overflow-hidden cursor-pointer">
-                <div className="h-full bg-amber-500 rounded-full w-2/5 animate-pulse" />
+              {/* Interactive Progress / Seek bar */}
+              <div
+                onClick={handleSeek}
+                className="flex-1 mx-4 h-2 bg-stone-700/80 hover:h-2.5 rounded-full overflow-hidden cursor-pointer transition-all"
+                title="Avanzar / Retroceder"
+              >
+                <div
+                  className="h-full bg-amber-500 rounded-full transition-all duration-150"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setIsMuted(!isMuted)}
-                  className="hover:text-amber-400 transition-colors"
+                  className="hover:text-amber-400 transition-colors p-1"
                 >
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
                 </button>
-                <span className="hidden sm:inline font-mono">1080p HD</span>
+                <span className="hidden sm:inline font-mono text-[10px] px-1.5 py-0.5 rounded bg-stone-800 border border-stone-700">1080p HD</span>
               </div>
             </div>
           </div>

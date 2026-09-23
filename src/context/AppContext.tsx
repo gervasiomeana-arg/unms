@@ -38,6 +38,7 @@ interface AppContextType {
   likePost: (id: string) => void;
   likeSolidarityMessage: (id: string) => void;
   addSolidarityMessage: (msg: Omit<SolidarityMessage, 'id' | 'date' | 'likes'>) => void;
+  deleteSolidarityMessage: (id: string) => void;
   addDonation: (donation: Omit<DonationRecord, 'id' | 'date' | 'certificateId'>) => DonationRecord;
   
   // Admin & CRUD operations
@@ -266,6 +267,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('¡Tu mensaje de solidaridad ha sido publicado!', 'success');
   };
 
+  const deleteSolidarityMessage = (id: string) => {
+    setSolidarityMessages((prev) => prev.filter((m) => m.id !== id));
+    showToast('Mensaje de solidaridad eliminado', 'info');
+  };
+
   const addDonation = (donationData: Omit<DonationRecord, 'id' | 'date' | 'certificateId'>): DonationRecord => {
     const id = `DON-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
     const certId = `CERT-UNMS-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -454,6 +460,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         likePost,
         likeSolidarityMessage,
         addSolidarityMessage,
+        deleteSolidarityMessage,
         addDonation,
 
         isAdminOpen,

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { translations, getLocalized } from '../data/translations';
-import { BlogPost, TestimonialMedia, Campaign, PushNotification, Language } from '../types';
+import { IMAGES } from '../data/initialData';
+import { BlogPost, TestimonialMedia, Campaign, Language } from '../types';
 import {
   Lock,
   Unlock,
@@ -10,10 +11,8 @@ import {
   Trash2,
   Send,
   Download,
-  Upload,
   RefreshCw,
   X,
-  FileText,
   Video,
   Heart,
   Bell,
@@ -21,8 +20,13 @@ import {
   BarChart3,
   Globe,
   Sparkles,
-  Search,
+  Flame,
+  MessageSquare,
+  Image as ImageIcon,
+  Clock,
+  MapPin,
   Check,
+  Award,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -49,6 +53,7 @@ export const AdminPanel: React.FC = () => {
     deleteCampaign,
     donations,
     solidarityMessages,
+    deleteSolidarityMessage,
     notifications,
     broadcastNotification,
     deleteNotification,
@@ -59,17 +64,26 @@ export const AdminPanel: React.FC = () => {
   const t = translations.admin;
 
   const [passcode, setPasscode] = useState('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'articles' | 'gallery' | 'campaigns' | 'push' | 'donations'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'articles' | 'gallery' | 'campaigns' | 'messages' | 'push' | 'donations'
+  >('overview');
 
-  // Story form state (for Add / Edit)
+  // Story Form State
   const [isEditingStory, setIsEditingStory] = useState(false);
   const [currentStory, setCurrentStory] = useState<Partial<BlogPost> | null>(null);
+  const [storyFormLang, setStoryFormLang] = useState<Language>('es');
 
-  // Media form state (for Add / Edit)
+  // Media Form State
   const [isEditingMedia, setIsEditingMedia] = useState(false);
   const [currentMedia, setCurrentMedia] = useState<Partial<TestimonialMedia> | null>(null);
+  const [mediaFormLang, setMediaFormLang] = useState<Language>('es');
 
-  // Push Broadcast form state
+  // Campaign Form State
+  const [isEditingCampaign, setIsEditingCampaign] = useState(false);
+  const [currentCampaign, setCurrentCampaign] = useState<Partial<Campaign> | null>(null);
+  const [campaignFormLang, setCampaignFormLang] = useState<Language>('es');
+
+  // Push Broadcast Form State
   const [pushTitleEs, setPushTitleEs] = useState('');
   const [pushTitleAr, setPushTitleAr] = useState('');
   const [pushTitleEn, setPushTitleEn] = useState('');
@@ -125,25 +139,58 @@ export const AdminPanel: React.FC = () => {
   const handleSaveStory = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentStory?.title?.es) {
-      showToast('Se requiere título en español', 'warning');
+      showToast('Se requiere al menos el título en español', 'warning');
       return;
     }
+
+    const title = currentStory.title;
+    const summary = currentStory.summary || { es: '', en: '', ar: '', fr: '' };
+    const content = currentStory.content || { es: '', en: '', ar: '', fr: '' };
+
+    const category = currentStory.category || 'humanitarian';
+    const categoryLabels: Record<string, { es: string; en: string; ar: string; fr: string }> = {
+      humanitarian: { es: 'Humanitaria', en: 'Humanitarian', ar: 'إنسانية', fr: 'Humanitaire' },
+      empowerment: { es: 'Empoderamiento', en: 'Empowerment', ar: 'تمكين المرأة', fr: 'Autonomisation' },
+      education: { es: 'Educación', en: 'Education', ar: 'التعليم', fr: 'Éducation' },
+      health: { es: 'Salud', en: 'Health', ar: 'الصحة', fr: 'Santé' },
+      culture: { es: 'Cultura', en: 'Culture', ar: 'التراث والذاكرة', fr: 'Culture' },
+      advocacy: { es: 'Incidencia', en: 'Advocacy', ar: 'المرافعة الدولية', fr: 'Plaidoyer' },
+      cooperative: { es: 'Cooperativas', en: 'Cooperatives', ar: 'التعاونيات', fr: 'Coopératives' },
+    };
 
     if (currentStory.id) {
       updateBlogPost(currentStory as BlogPost);
     } else {
       addBlogPost({
-        title: currentStory.title || { es: '', en: '', ar: '', fr: '' },
-        summary: currentStory.summary || { es: '', en: '', ar: '', fr: '' },
-        content: currentStory.content || { es: '', en: '', ar: '', fr: '' },
-        category: (currentStory.category as any) || 'humanitarian',
-        categoryLabel: currentStory.categoryLabel || { es: 'Humanitaria', en: 'Humanitarian', ar: 'إنسانية', fr: 'Humanitaire' },
-        author: currentStory.author || { name: 'Comité UNMS', role: { es: 'Delegación', en: 'Delegation', ar: 'اللجنة', fr: 'Délégation' } },
-        date: new Date().toISOString().split('T')[0],
+        title: {
+          es: title.es,
+          en: title.en || title.es,
+          ar: title.ar || title.es,
+          fr: title.fr || title.es,
+        },
+        summary: {
+          es: summary.es || title.es,
+          en: summary.en || summary.es || title.es,
+          ar: summary.ar || summary.es || title.es,
+          fr: summary.fr || summary.es || title.es,
+        },
+        content: {
+          es: content.es || summary.es || title.es,
+          en: content.en || content.es || summary.es || title.es,
+          ar: content.ar || content.es || summary.es || title.es,
+          fr: content.fr || content.es || summary.es || title.es,
+        },
+        category,
+        categoryLabel: categoryLabels[category] || categoryLabels.humanitarian,
+        author: currentStory.author || {
+          name: 'Comité UNMS',
+          role: { es: 'Coordinación', en: 'Coordination', ar: 'التنسيق', fr: 'Coordination' },
+        },
+        date: currentStory.date || new Date().toISOString().split('T')[0],
         readTime: currentStory.readTime || '4',
-        imageUrl: currentStory.imageUrl || '/src/assets/images/unms_hero_women_1788306077567.jpg',
+        imageUrl: currentStory.imageUrl || IMAGES.hero,
         featured: currentStory.featured || false,
-        tags: currentStory.tags || ['UNMS', 'Solidaridad'],
+        tags: currentStory.tags && currentStory.tags.length > 0 ? currentStory.tags : ['UNMS', 'Solidaridad'],
         wilaya: currentStory.wilaya || 'Smara',
       });
     }
@@ -160,27 +207,97 @@ export const AdminPanel: React.FC = () => {
       return;
     }
 
+    const title = currentMedia.title;
+    const quote = currentMedia.quote || { es: '', en: '', ar: '', fr: '' };
+    const transcript = currentMedia.fullTranscript || { es: '', en: '', ar: '', fr: '' };
+    const speakerRole = currentMedia.speakerRole || {
+      es: 'Portavoz Comunitaria',
+      en: 'Community Spokesperson',
+      ar: 'متحدثة مجتمعية',
+      fr: 'Porte-parole communautaire',
+    };
+
     if (currentMedia.id) {
       updateTestimonial(currentMedia as TestimonialMedia);
     } else {
       addTestimonial({
         type: currentMedia.type || 'video',
-        title: currentMedia.title || { es: '', en: '', ar: '', fr: '' },
+        title: {
+          es: title.es,
+          en: title.en || title.es,
+          ar: title.ar || title.es,
+          fr: title.fr || title.es,
+        },
         speaker: currentMedia.speaker || '',
-        speakerRole: currentMedia.speakerRole || { es: '', en: '', ar: '', fr: '' },
+        speakerRole: {
+          es: speakerRole.es,
+          en: speakerRole.en || speakerRole.es,
+          ar: speakerRole.ar || speakerRole.es,
+          fr: speakerRole.fr || speakerRole.es,
+        },
         location: currentMedia.location || 'Wilaya de Smara',
-        duration: currentMedia.duration || '03:45',
-        thumbnailUrl: currentMedia.thumbnailUrl || '/src/assets/images/unms_hero_women_1788306077567.jpg',
-        quote: currentMedia.quote || { es: '', en: '', ar: '', fr: '' },
-        fullTranscript: currentMedia.fullTranscript || { es: '', en: '', ar: '', fr: '' },
-        date: new Date().toISOString().split('T')[0],
-        tags: currentMedia.tags || ['Testimonio'],
+        duration: currentMedia.duration || '04:15',
+        thumbnailUrl: currentMedia.thumbnailUrl || IMAGES.weaving,
+        quote: {
+          es: quote.es || title.es,
+          en: quote.en || quote.es || title.es,
+          ar: quote.ar || quote.es || title.es,
+          fr: quote.fr || quote.es || title.es,
+        },
+        fullTranscript: {
+          es: transcript.es || quote.es || title.es,
+          en: transcript.en || transcript.es || quote.es || title.es,
+          ar: transcript.ar || transcript.es || quote.es || title.es,
+          fr: transcript.fr || transcript.es || quote.es || title.es,
+        },
+        date: currentMedia.date || new Date().toISOString().split('T')[0],
+        tags: currentMedia.tags && currentMedia.tags.length > 0 ? currentMedia.tags : ['Testimonio', 'UNMS'],
         featured: currentMedia.featured || false,
       });
     }
 
     setIsEditingMedia(false);
     setCurrentMedia(null);
+  };
+
+  // Campaign submission
+  const handleSaveCampaign = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentCampaign?.title?.es) {
+      showToast('Se requiere título en español para la campaña', 'warning');
+      return;
+    }
+
+    const title = currentCampaign.title;
+    const desc = currentCampaign.description || { es: '', en: '', ar: '', fr: '' };
+
+    if (currentCampaign.id) {
+      updateCampaign(currentCampaign as Campaign);
+    } else {
+      addCampaign({
+        title: {
+          es: title.es,
+          en: title.en || title.es,
+          ar: title.ar || title.es,
+          fr: title.fr || title.es,
+        },
+        description: {
+          es: desc.es || title.es,
+          en: desc.en || desc.es || title.es,
+          ar: desc.ar || desc.es || title.es,
+          fr: desc.fr || desc.es || title.es,
+        },
+        targetGoalEUR: Number(currentCampaign.targetGoalEUR) || 5000,
+        daysLeft: Number(currentCampaign.daysLeft) || 30,
+        category: currentCampaign.category || 'health',
+        hashtag: currentCampaign.hashtag || '#UNMS_Solidaridad',
+        imageUrl: currentCampaign.imageUrl || IMAGES.health,
+        urgent: currentCampaign.urgent ?? false,
+      });
+    }
+
+    setIsEditingCampaign(false);
+    setCurrentCampaign(null);
   };
 
   // Export donations CSV
@@ -200,10 +317,19 @@ export const AdminPanel: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast('Archivo CSV de donaciones exportado', 'success');
+    showToast('Archivo CSV de donaciones exportado con éxito', 'success');
   };
 
   const totalDonationsAmount = donations.reduce((acc, curr) => acc + curr.amount, 0);
+
+  const presetImages = [
+    { label: 'Hero / Asambleas', url: IMAGES.hero },
+    { label: 'Cooperativa Textil', url: IMAGES.weaving },
+    { label: 'Educación 27 Feb', url: IMAGES.education },
+    { label: 'Salud Materno-Infantil', url: IMAGES.health },
+    { label: 'Mesa Diplomática / ONU', url: IMAGES.advocacy },
+    { label: 'Cultura del Té / Haul', url: IMAGES.culture },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-stone-950/90 backdrop-blur-md">
@@ -213,7 +339,7 @@ export const AdminPanel: React.FC = () => {
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="relative w-full max-w-6xl bg-stone-900 text-stone-100 rounded-3xl shadow-2xl overflow-hidden my-6 max-h-[94vh] flex flex-col border border-stone-800"
       >
-        {/* Admin Header */}
+        {/* Admin Top Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-stone-950 border-b border-stone-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
@@ -259,7 +385,13 @@ export const AdminPanel: React.FC = () => {
 
               <div>
                 <h3 className="text-2xl font-bold text-white font-serif">
-                  {language === 'ar' ? 'تسجيل الدخول إلى لوحة الإدارة' : language === 'fr' ? 'Accès au Panneau de Gestion' : language === 'en' ? 'Admin Panel Access' : 'Acceso al Panel de Gestión'}
+                  {language === 'ar'
+                    ? 'تسجيل الدخول إلى لوحة الإدارة'
+                    : language === 'fr'
+                    ? 'Accès au Panneau de Gestion'
+                    : language === 'en'
+                    ? 'Admin Panel Access'
+                    : 'Acceso al Panel de Gestión'}
                 </h3>
                 <p className="text-xs text-stone-400 mt-2">
                   {language === 'ar'
@@ -277,21 +409,35 @@ export const AdminPanel: React.FC = () => {
                   type="password"
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
-                  placeholder={language === 'ar' ? 'كلمة المرور (unms2026)' : language === 'fr' ? 'Mot de passe (unms2026)' : language === 'en' ? 'Passcode (unms2026)' : 'Clave de acceso (unms2026)'}
+                  placeholder={
+                    language === 'ar'
+                      ? 'كلمة المرور (unms2026)'
+                      : language === 'fr'
+                      ? 'Mot de passe (unms2026)'
+                      : language === 'en'
+                      ? 'Passcode (unms2026)'
+                      : 'Clave de acceso (unms2026)'
+                  }
                   className="w-full px-4 py-3 bg-stone-950 border border-stone-700 rounded-xl text-sm text-center text-white focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 font-mono tracking-wider"
                 />
                 <button
                   type="submit"
                   className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm rounded-xl transition-all shadow-md"
                 >
-                  {language === 'ar' ? 'دخول' : language === 'fr' ? 'Accéder' : language === 'en' ? 'Sign In' : 'Acceder al Panel'}
+                  {language === 'ar'
+                    ? 'دخول'
+                    : language === 'fr'
+                    ? 'Accéder'
+                    : language === 'en'
+                    ? 'Sign In'
+                    : 'Acceder al Panel'}
                 </button>
               </form>
             </div>
           ) : (
             /* ================= AUTHENTICATED ADMIN DASHBOARD ================= */
             <div className="space-y-6">
-              {/* Navigation Tabs */}
+              {/* Navigation Tabs Bar */}
               <div className="flex flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
                 <button
                   onClick={() => setActiveTab('overview')}
@@ -324,6 +470,26 @@ export const AdminPanel: React.FC = () => {
                   {t.tabs.gallery[language]} ({testimonials.length})
                 </button>
                 <button
+                  onClick={() => setActiveTab('campaigns')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'campaigns'
+                      ? 'bg-amber-600 text-stone-950'
+                      : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
+                  }`}
+                >
+                  {t.tabs.campaigns[language]} ({campaigns.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('messages')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                    activeTab === 'messages'
+                      ? 'bg-amber-600 text-stone-950'
+                      : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
+                  }`}
+                >
+                  {t.tabs.solidarityMessages[language]} ({solidarityMessages.length})
+                </button>
+                <button
                   onClick={() => setActiveTab('push')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
                     activeTab === 'push'
@@ -331,7 +497,7 @@ export const AdminPanel: React.FC = () => {
                       : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
                   }`}
                 >
-                  {t.tabs.pushBroadcast[language]}
+                  {t.tabs.pushBroadcast[language]} ({notifications.length})
                 </button>
                 <button
                   onClick={() => setActiveTab('donations')}
@@ -341,65 +507,160 @@ export const AdminPanel: React.FC = () => {
                       : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
                   }`}
                 >
-                  {t.tabs.donations[language]} ({donations.length})
+                  {t.tabs.donations[language]} (€{totalDonationsAmount.toLocaleString()})
                 </button>
               </div>
 
               {/* TAB 1: OVERVIEW METRICS */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-stone-950 p-5 rounded-2xl border border-stone-800">
-                      <div className="text-xs text-stone-400">{t.totalDonations[language]}</div>
-                      <div className="text-2xl font-bold text-amber-400 font-serif mt-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="p-4 bg-stone-950 rounded-2xl border border-stone-800">
+                      <div className="flex items-center justify-between text-stone-400 text-xs mb-1">
+                        <span>{t.totalDonations[language]}</span>
+                        <Heart className="w-4 h-4 text-rose-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white font-serif">
                         €{totalDonationsAmount.toLocaleString()}
                       </div>
-                      <div className="text-[11px] text-stone-500 mt-1">{donations.length} aportes registrados</div>
+                      <div className="text-[11px] text-stone-500 mt-1">
+                        {donations.length} donaciones registradas
+                      </div>
                     </div>
 
-                    <div className="bg-stone-950 p-5 rounded-2xl border border-stone-800">
-                      <div className="text-xs text-stone-400">{t.publishedStoriesCount[language]}</div>
-                      <div className="text-2xl font-bold text-white font-serif mt-1">
+                    <div className="p-4 bg-stone-950 rounded-2xl border border-stone-800">
+                      <div className="flex items-center justify-between text-stone-400 text-xs mb-1">
+                        <span>{t.publishedStoriesCount[language]}</span>
+                        <Globe className="w-4 h-4 text-amber-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white font-serif">
                         {blogPosts.length}
                       </div>
-                      <div className="text-[11px] text-stone-500 mt-1">En 4 idiomas activos</div>
+                      <div className="text-[11px] text-stone-500 mt-1">
+                        Crónicas y relatos activos
+                      </div>
                     </div>
 
-                    <div className="bg-stone-950 p-5 rounded-2xl border border-stone-800">
-                      <div className="text-xs text-stone-400">{t.mediaTestimonialsCount[language]}</div>
-                      <div className="text-2xl font-bold text-white font-serif mt-1">
+                    <div className="p-4 bg-stone-950 rounded-2xl border border-stone-800">
+                      <div className="flex items-center justify-between text-stone-400 text-xs mb-1">
+                        <span>Testimonios Grabados</span>
+                        <Video className="w-4 h-4 text-sky-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-white font-serif">
                         {testimonials.length}
                       </div>
-                      <div className="text-[11px] text-stone-500 mt-1">Vídeos, audios y fotos</div>
+                      <div className="text-[11px] text-stone-500 mt-1">
+                        Vídeos y audio en archivo
+                      </div>
                     </div>
 
-                    <div className="bg-stone-950 p-5 rounded-2xl border border-stone-800">
-                      <div className="text-xs text-stone-400">Mensajes de Solidaridad</div>
-                      <div className="text-2xl font-bold text-white font-serif mt-1">
-                        {solidarityMessages.length}
+                    <div className="p-4 bg-stone-950 rounded-2xl border border-stone-800">
+                      <div className="flex items-center justify-between text-stone-400 text-xs mb-1">
+                        <span>Campañas Activas</span>
+                        <Flame className="w-4 h-4 text-orange-500" />
                       </div>
-                      <div className="text-[11px] text-stone-500 mt-1">Red internacional activa</div>
+                      <div className="text-2xl font-bold text-white font-serif">
+                        {campaigns.length}
+                      </div>
+                      <div className="text-[11px] text-stone-500 mt-1">
+                        Proyectos humanitarios
+                      </div>
                     </div>
                   </div>
 
-                  {/* Reset & Quick Tools */}
-                  <div className="p-5 bg-stone-950 rounded-2xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div>
-                      <h4 className="text-sm font-bold text-white font-serif">
-                        Restaurar datos predeterminados de demostración
-                      </h4>
-                      <p className="text-xs text-stone-400">
-                        Restablece las historias, testimonios y donaciones al estado inicial de fábrica.
-                      </p>
+                  {/* Administrative Quick Actions */}
+                  <div className="bg-stone-950 p-6 rounded-2xl border border-stone-800 space-y-4">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>Acciones Rápidas del Administrador</span>
+                    </h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <button
+                        onClick={() => {
+                          setCurrentStory({
+                            title: { es: '', en: '', ar: '', fr: '' },
+                            summary: { es: '', en: '', ar: '', fr: '' },
+                            content: { es: '', en: '', ar: '', fr: '' },
+                            category: 'humanitarian',
+                            author: {
+                              name: 'Comité UNMS',
+                              role: { es: 'Coordinación', en: 'Coordination', ar: 'التنسيق', fr: 'Coordination' },
+                            },
+                            tags: ['UNMS'],
+                            wilaya: 'Smara',
+                          });
+                          setIsEditingStory(true);
+                        }}
+                        className="p-3 bg-stone-900 hover:bg-stone-800 rounded-xl border border-stone-800 text-left rtl:text-right flex items-center gap-3 transition-colors"
+                      >
+                        <Plus className="w-4 h-4 text-amber-400 shrink-0" />
+                        <div>
+                          <div className="text-xs font-bold text-white">{t.addNewStory[language]}</div>
+                          <div className="text-[11px] text-stone-400">Crear crónica multilingüe</div>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setCurrentMedia({
+                            type: 'video',
+                            title: { es: '', en: '', ar: '', fr: '' },
+                            speaker: '',
+                            speakerRole: { es: '', en: '', ar: '', fr: '' },
+                            quote: { es: '', en: '', ar: '', fr: '' },
+                            fullTranscript: { es: '', en: '', ar: '', fr: '' },
+                            location: 'Wilaya de Smara',
+                            tags: ['Testimonio'],
+                          });
+                          setIsEditingMedia(true);
+                        }}
+                        className="p-3 bg-stone-900 hover:bg-stone-800 rounded-xl border border-stone-800 text-left rtl:text-right flex items-center gap-3 transition-colors"
+                      >
+                        <Video className="w-4 h-4 text-sky-400 shrink-0" />
+                        <div>
+                          <div className="text-xs font-bold text-white">{t.addNewMedia[language]}</div>
+                          <div className="text-[11px] text-stone-400">Subir audio o vídeo</div>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setCurrentCampaign({
+                            title: { es: '', en: '', ar: '', fr: '' },
+                            description: { es: '', en: '', ar: '', fr: '' },
+                            targetGoalEUR: 10000,
+                            daysLeft: 45,
+                            category: 'health',
+                            hashtag: '#SaludSaharaui',
+                            urgent: true,
+                          });
+                          setIsEditingCampaign(true);
+                        }}
+                        className="p-3 bg-stone-900 hover:bg-stone-800 rounded-xl border border-stone-800 text-left rtl:text-right flex items-center gap-3 transition-colors"
+                      >
+                        <Flame className="w-4 h-4 text-rose-400 shrink-0" />
+                        <div>
+                          <div className="text-xs font-bold text-white">Nueva Campaña</div>
+                          <div className="text-[11px] text-stone-400">Lanzar recaudación urgente</div>
+                        </div>
+                      </button>
                     </div>
 
-                    <button
-                      onClick={resetToDefaultData}
-                      className="px-4 py-2 bg-stone-800 hover:bg-rose-950/80 hover:text-rose-300 text-stone-300 border border-stone-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Restablecer Datos</span>
-                    </button>
+                    <div className="pt-4 border-t border-stone-800 flex items-center justify-between text-xs text-stone-400">
+                      <span>Restablecer estado de demostración predeterminado:</span>
+                      <button
+                        onClick={() => {
+                          if (window.confirm('¿Seguro que deseas restablecer todos los datos iniciales?')) {
+                            resetToDefaultData();
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-rose-950 text-rose-300 border border-stone-800 flex items-center gap-1.5 transition-colors"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Restablecer Datos</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -418,7 +679,10 @@ export const AdminPanel: React.FC = () => {
                           summary: { es: '', en: '', ar: '', fr: '' },
                           content: { es: '', en: '', ar: '', fr: '' },
                           category: 'humanitarian',
-                          author: { name: 'Comité UNMS', role: { es: 'Coordinación', en: 'Coordination', ar: 'التنسيق', fr: 'Coordination' } },
+                          author: {
+                            name: 'Comité UNMS',
+                            role: { es: 'Coordinación', en: 'Coordination', ar: 'التنسيق', fr: 'Coordination' },
+                          },
                           tags: ['UNMS'],
                           wilaya: 'Smara',
                         });
@@ -531,12 +795,14 @@ export const AdminPanel: React.FC = () => {
                               setIsEditingMedia(true);
                             }}
                             className="p-2 hover:bg-stone-800 text-stone-300 hover:text-amber-400 rounded-lg transition-colors"
+                            title="Editar"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteTestimonial(media.id)}
                             className="p-2 hover:bg-stone-800 text-stone-300 hover:text-rose-400 rounded-lg transition-colors"
+                            title="Eliminar"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -547,7 +813,155 @@ export const AdminPanel: React.FC = () => {
                 </div>
               )}
 
-              {/* TAB 4: PUSH NOTIFICATIONS BROADCASTER */}
+              {/* TAB 4: CAMPAIGNS MANAGEMENT */}
+              {activeTab === 'campaigns' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white">
+                      {t.tabs.campaigns[language]} ({campaigns.length})
+                    </h3>
+                    <button
+                      onClick={() => {
+                        setCurrentCampaign({
+                          title: { es: '', en: '', ar: '', fr: '' },
+                          description: { es: '', en: '', ar: '', fr: '' },
+                          targetGoalEUR: 10000,
+                          daysLeft: 45,
+                          category: 'health',
+                          hashtag: '#SaludSaharaui',
+                          urgent: false,
+                        });
+                        setIsEditingCampaign(true);
+                      }}
+                      className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-bold rounded-xl flex items-center gap-1.5"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Nueva Campaña</span>
+                    </button>
+                  </div>
+
+                  {/* List of campaigns */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {campaigns.map((camp) => {
+                      const percent = Math.min(
+                        100,
+                        Math.round((camp.currentAmountEUR / camp.targetGoalEUR) * 100)
+                      );
+                      return (
+                        <div
+                          key={camp.id}
+                          className="bg-stone-950 p-4 rounded-2xl border border-stone-800 flex flex-col justify-between space-y-3"
+                        >
+                          <div className="flex items-start gap-3">
+                            <img
+                              src={camp.imageUrl}
+                              alt=""
+                              className="w-16 h-16 rounded-xl object-cover shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-bold text-white truncate">
+                                  {getLocalized(camp.title, language)}
+                                </h4>
+                                {camp.urgent && (
+                                  <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-[10px] font-bold">
+                                    Urgente
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-amber-400 font-mono mt-0.5">
+                                {camp.hashtag}
+                              </div>
+                              <p className="text-[11px] text-stone-400 line-clamp-2 mt-1">
+                                {getLocalized(camp.description, language)}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between text-[11px] text-stone-400 mb-1">
+                              <span>
+                                €{camp.currentAmountEUR.toLocaleString()} / €{camp.targetGoalEUR.toLocaleString()}
+                              </span>
+                              <span>{percent}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-amber-500 rounded-full"
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-stone-900 text-xs">
+                            <span className="text-stone-500 text-[11px]">{camp.daysLeft} días restantes</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setCurrentCampaign(camp);
+                                  setIsEditingCampaign(true);
+                                }}
+                                className="p-1.5 hover:bg-stone-800 text-stone-300 hover:text-amber-400 rounded-lg transition-colors"
+                                title="Editar"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => deleteCampaign(camp.id)}
+                                className="p-1.5 hover:bg-stone-800 text-stone-300 hover:text-rose-400 rounded-lg transition-colors"
+                                title="Eliminar"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: SOLIDARITY WALL MESSAGES MODERATION */}
+              {activeTab === 'messages' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white">
+                      {t.tabs.solidarityMessages[language]} ({solidarityMessages.length})
+                    </h3>
+                  </div>
+
+                  <div className="divide-y divide-stone-800 bg-stone-950 rounded-2xl border border-stone-800 overflow-hidden">
+                    {solidarityMessages.map((msg) => (
+                      <div key={msg.id} className="p-4 flex items-start justify-between gap-4 hover:bg-stone-900/40">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="font-bold text-white">{msg.author}</span>
+                            <span className="text-amber-400 font-medium">({msg.country})</span>
+                            <span className="text-stone-500 text-[11px]">• {msg.date}</span>
+                            <span className="text-rose-400 text-[11px] flex items-center gap-0.5">
+                              <Heart className="w-3 h-3 fill-rose-500" /> {msg.likes}
+                            </span>
+                          </div>
+                          <p className="text-xs text-stone-300 italic font-serif leading-relaxed">
+                            "{msg.message}"
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => deleteSolidarityMessage(msg.id)}
+                          className="p-2 hover:bg-stone-800 text-stone-400 hover:text-rose-400 rounded-lg transition-colors shrink-0"
+                          title="Eliminar mensaje del muro"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 6: PUSH NOTIFICATIONS BROADCASTER */}
               {activeTab === 'push' && (
                 <div className="space-y-6">
                   <div className="bg-stone-950 p-6 rounded-2xl border border-stone-800">
@@ -664,13 +1078,18 @@ export const AdminPanel: React.FC = () => {
                 </div>
               )}
 
-              {/* TAB 5: DONATIONS RECORDS */}
+              {/* TAB 7: DONATIONS RECORDS */}
               {activeTab === 'donations' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-white">
-                      {t.tabs.donations[language]} ({donations.length})
-                    </h3>
+                    <div>
+                      <h3 className="text-base font-bold text-white">
+                        {t.tabs.donations[language]} ({donations.length})
+                      </h3>
+                      <p className="text-xs text-amber-400 font-semibold mt-0.5">
+                        Total Recaudado: €{totalDonationsAmount.toLocaleString()}
+                      </p>
+                    </div>
                     <button
                       onClick={handleExportDonationsCSV}
                       className="px-3.5 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold rounded-xl flex items-center gap-1.5 border border-stone-700"
@@ -713,6 +1132,675 @@ export const AdminPanel: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* ================= MODAL: EDIT / CREATE STORY ================= */}
+        <AnimatePresence>
+          {isEditingStory && currentStory && (
+            <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-3xl bg-stone-900 border border-stone-700 rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 text-stone-100 shadow-2xl"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-stone-800">
+                  <h3 className="text-lg font-bold text-white font-serif">
+                    {currentStory.id ? 'Editar Historia' : 'Publicar Nueva Historia'}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsEditingStory(false);
+                      setCurrentStory(null);
+                    }}
+                    className="p-1.5 rounded-full hover:bg-stone-800 text-stone-400"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveStory} className="space-y-4">
+                  {/* Language Selector for Multilingual content */}
+                  <div className="flex items-center gap-2 p-1 bg-stone-950 rounded-xl border border-stone-800 text-xs">
+                    <span className="px-2 text-stone-400 font-semibold">Idioma de redacción:</span>
+                    {(['es', 'en', 'ar', 'fr'] as Language[]).map((lng) => (
+                      <button
+                        type="button"
+                        key={lng}
+                        onClick={() => setStoryFormLang(lng)}
+                        className={`px-3 py-1 rounded-lg uppercase font-bold transition-all ${
+                          storyFormLang === lng
+                            ? 'bg-amber-600 text-stone-950 shadow-xs'
+                            : 'text-stone-400 hover:text-white'
+                        }`}
+                      >
+                        {lng}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Título ({storyFormLang.toUpperCase()}) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={currentStory.title?.[storyFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentStory({
+                          ...currentStory,
+                          title: {
+                            ...(currentStory.title || { es: '', en: '', ar: '', fr: '' }),
+                            [storyFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={storyFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Título de la crónica o historia..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Resumen / Breve descripción ({storyFormLang.toUpperCase()})
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={currentStory.summary?.[storyFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentStory({
+                          ...currentStory,
+                          summary: {
+                            ...(currentStory.summary || { es: '', en: '', ar: '', fr: '' }),
+                            [storyFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={storyFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Sinopsis para la tarjeta..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Contenido Completo ({storyFormLang.toUpperCase()})
+                    </label>
+                    <textarea
+                      rows={5}
+                      value={currentStory.content?.[storyFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentStory({
+                          ...currentStory,
+                          content: {
+                            ...(currentStory.content || { es: '', en: '', ar: '', fr: '' }),
+                            [storyFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={storyFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Texto íntegro del artículo o testimonio..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white resize-y"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Categoría</label>
+                      <select
+                        value={currentStory.category || 'humanitarian'}
+                        onChange={(e) =>
+                          setCurrentStory({ ...currentStory, category: e.target.value as any })
+                        }
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      >
+                        <option value="humanitarian">Acción Humanitaria</option>
+                        <option value="education">Educación & Formación</option>
+                        <option value="health">Salud Materno-Infantil</option>
+                        <option value="empowerment">Empoderamiento Femenino</option>
+                        <option value="culture">Cultura & Memoria</option>
+                        <option value="cooperative">Cooperativas</option>
+                        <option value="advocacy">Incidencia Internacional</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Wilaya / Ubicación</label>
+                      <select
+                        value={currentStory.wilaya || 'Smara'}
+                        onChange={(e) => setCurrentStory({ ...currentStory, wilaya: e.target.value })}
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      >
+                        <option value="Smara">Wilaya de Smara</option>
+                        <option value="Bojador">Wilaya de Bojador</option>
+                        <option value="El Aaiún">Wilaya de El Aaiún</option>
+                        <option value="Dajla">Wilaya de Dajla</option>
+                        <option value="Auserd">Wilaya de Auserd</option>
+                        <option value="Ginebra / ONU">Ginebra / ONU</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Tiempo de lectura (min)</label>
+                      <input
+                        type="text"
+                        value={currentStory.readTime || '4'}
+                        onChange={(e) => setCurrentStory({ ...currentStory, readTime: e.target.value })}
+                        placeholder="Ej. 4"
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">Imagen de Portada (URL)</label>
+                    <input
+                      type="text"
+                      value={currentStory.imageUrl || ''}
+                      onChange={(e) => setCurrentStory({ ...currentStory, imageUrl: e.target.value })}
+                      placeholder="https://... o selecciona un recurso:"
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {presetImages.map((p) => (
+                        <button
+                          type="button"
+                          key={p.label}
+                          onClick={() => setCurrentStory({ ...currentStory, imageUrl: p.url })}
+                          className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 rounded-lg text-[10px] text-stone-300"
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <input
+                      type="checkbox"
+                      id="story-featured"
+                      checked={currentStory.featured || false}
+                      onChange={(e) => setCurrentStory({ ...currentStory, featured: e.target.checked })}
+                      className="rounded text-amber-600 focus:ring-0"
+                    />
+                    <label htmlFor="story-featured" className="text-xs text-stone-300">
+                      Destacar en portada principal (Featured)
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingStory(false);
+                        setCurrentStory(null);
+                      }}
+                      className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-stone-950 rounded-xl text-xs font-bold shadow-md"
+                    >
+                      Guardar Historia
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ================= MODAL: EDIT / CREATE TESTIMONIAL ================= */}
+        <AnimatePresence>
+          {isEditingMedia && currentMedia && (
+            <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-3xl bg-stone-900 border border-stone-700 rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 text-stone-100 shadow-2xl"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-stone-800">
+                  <h3 className="text-lg font-bold text-white font-serif">
+                    {currentMedia.id ? 'Editar Testimonio / Grabación' : 'Añadir Nuevo Testimonio'}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsEditingMedia(false);
+                      setCurrentMedia(null);
+                    }}
+                    className="p-1.5 rounded-full hover:bg-stone-800 text-stone-400"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveMedia} className="space-y-4">
+                  {/* Language Selector */}
+                  <div className="flex items-center gap-2 p-1 bg-stone-950 rounded-xl border border-stone-800 text-xs">
+                    <span className="px-2 text-stone-400 font-semibold">Idioma de transcripción:</span>
+                    {(['es', 'en', 'ar', 'fr'] as Language[]).map((lng) => (
+                      <button
+                        type="button"
+                        key={lng}
+                        onClick={() => setMediaFormLang(lng)}
+                        className={`px-3 py-1 rounded-lg uppercase font-bold transition-all ${
+                          mediaFormLang === lng
+                            ? 'bg-amber-600 text-stone-950 shadow-xs'
+                            : 'text-stone-400 hover:text-white'
+                        }`}
+                      >
+                        {lng}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Título ({mediaFormLang.toUpperCase()}) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={currentMedia.title?.[mediaFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentMedia({
+                          ...currentMedia,
+                          title: {
+                            ...(currentMedia.title || { es: '', en: '', ar: '', fr: '' }),
+                            [mediaFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={mediaFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Título del testimonio..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Nombre de la Portavoz *</label>
+                      <input
+                        type="text"
+                        required
+                        value={currentMedia.speaker || ''}
+                        onChange={(e) => setCurrentMedia({ ...currentMedia, speaker: e.target.value })}
+                        placeholder="Ej. Fatma Brahim"
+                        className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">
+                        Cargo o Responsabilidad ({mediaFormLang.toUpperCase()})
+                      </label>
+                      <input
+                        type="text"
+                        value={currentMedia.speakerRole?.[mediaFormLang] || ''}
+                        onChange={(e) =>
+                          setCurrentMedia({
+                            ...currentMedia,
+                            speakerRole: {
+                              ...(currentMedia.speakerRole || { es: '', en: '', ar: '', fr: '' }),
+                              [mediaFormLang]: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Ej. Coordinadora Sanitaria"
+                        className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Formato</label>
+                      <select
+                        value={currentMedia.type || 'video'}
+                        onChange={(e) =>
+                          setCurrentMedia({ ...currentMedia, type: e.target.value as any })
+                        }
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      >
+                        <option value="video">Vídeo</option>
+                        <option value="audio">Audio / Podcast</option>
+                        <option value="photo_story">Fotorreportaje</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Wilaya</label>
+                      <input
+                        type="text"
+                        value={currentMedia.location || 'Wilaya de Smara'}
+                        onChange={(e) => setCurrentMedia({ ...currentMedia, location: e.target.value })}
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Duración (mm:ss)</label>
+                      <input
+                        type="text"
+                        value={currentMedia.duration || '04:12'}
+                        onChange={(e) => setCurrentMedia({ ...currentMedia, duration: e.target.value })}
+                        placeholder="04:12"
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Cita Destacada ({mediaFormLang.toUpperCase()})
+                    </label>
+                    <input
+                      type="text"
+                      value={currentMedia.quote?.[mediaFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentMedia({
+                          ...currentMedia,
+                          quote: {
+                            ...(currentMedia.quote || { es: '', en: '', ar: '', fr: '' }),
+                            [mediaFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={mediaFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Cita representativa del testimonio..."
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white italic"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Transcripción Completa ({mediaFormLang.toUpperCase()})
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={currentMedia.fullTranscript?.[mediaFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentMedia({
+                          ...currentMedia,
+                          fullTranscript: {
+                            ...(currentMedia.fullTranscript || { es: '', en: '', ar: '', fr: '' }),
+                            [mediaFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={mediaFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Texto completo de la entrevista..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white resize-y"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">Imagen de Portada / Miniatura</label>
+                    <input
+                      type="text"
+                      value={currentMedia.thumbnailUrl || ''}
+                      onChange={(e) => setCurrentMedia({ ...currentMedia, thumbnailUrl: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {presetImages.map((p) => (
+                        <button
+                          type="button"
+                          key={p.label}
+                          onClick={() => setCurrentMedia({ ...currentMedia, thumbnailUrl: p.url })}
+                          className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 rounded-lg text-[10px] text-stone-300"
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <input
+                      type="checkbox"
+                      id="media-featured"
+                      checked={currentMedia.featured || false}
+                      onChange={(e) => setCurrentMedia({ ...currentMedia, featured: e.target.checked })}
+                      className="rounded text-amber-600 focus:ring-0"
+                    />
+                    <label htmlFor="media-featured" className="text-xs text-stone-300">
+                      Destacar en el reproductor del Hero (Featured)
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingMedia(false);
+                        setCurrentMedia(null);
+                      }}
+                      className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-stone-950 rounded-xl text-xs font-bold shadow-md"
+                    >
+                      Guardar Testimonio
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ================= MODAL: EDIT / CREATE CAMPAIGN ================= */}
+        <AnimatePresence>
+          {isEditingCampaign && currentCampaign && (
+            <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-2xl bg-stone-900 border border-stone-700 rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 text-stone-100 shadow-2xl"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-stone-800">
+                  <h3 className="text-lg font-bold text-white font-serif">
+                    {currentCampaign.id ? 'Editar Campaña' : 'Crear Nueva Campaña de Solidaridad'}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsEditingCampaign(false);
+                      setCurrentCampaign(null);
+                    }}
+                    className="p-1.5 rounded-full hover:bg-stone-800 text-stone-400"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveCampaign} className="space-y-4">
+                  {/* Language Selector */}
+                  <div className="flex items-center gap-2 p-1 bg-stone-950 rounded-xl border border-stone-800 text-xs">
+                    <span className="px-2 text-stone-400 font-semibold">Idioma:</span>
+                    {(['es', 'en', 'ar', 'fr'] as Language[]).map((lng) => (
+                      <button
+                        type="button"
+                        key={lng}
+                        onClick={() => setCampaignFormLang(lng)}
+                        className={`px-3 py-1 rounded-lg uppercase font-bold transition-all ${
+                          campaignFormLang === lng
+                            ? 'bg-amber-600 text-stone-950 shadow-xs'
+                            : 'text-stone-400 hover:text-white'
+                        }`}
+                      >
+                        {lng}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Título de la Campaña ({campaignFormLang.toUpperCase()}) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={currentCampaign.title?.[campaignFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentCampaign({
+                          ...currentCampaign,
+                          title: {
+                            ...(currentCampaign.title || { es: '', en: '', ar: '', fr: '' }),
+                            [campaignFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={campaignFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Ej. Fondo de Emergencia para Hospitales..."
+                      className="w-full px-3.5 py-2.5 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">
+                      Descripción ({campaignFormLang.toUpperCase()})
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={currentCampaign.description?.[campaignFormLang] || ''}
+                      onChange={(e) =>
+                        setCurrentCampaign({
+                          ...currentCampaign,
+                          description: {
+                            ...(currentCampaign.description || { es: '', en: '', ar: '', fr: '' }),
+                            [campaignFormLang]: e.target.value,
+                          },
+                        })
+                      }
+                      dir={campaignFormLang === 'ar' ? 'rtl' : 'ltr'}
+                      placeholder="Propósito y detalles del proyecto..."
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Meta a recaudar (€)</label>
+                      <input
+                        type="number"
+                        required
+                        value={currentCampaign.targetGoalEUR || 10000}
+                        onChange={(e) =>
+                          setCurrentCampaign({ ...currentCampaign, targetGoalEUR: Number(e.target.value) })
+                        }
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Días restantes</label>
+                      <input
+                        type="number"
+                        value={currentCampaign.daysLeft || 30}
+                        onChange={(e) =>
+                          setCurrentCampaign({ ...currentCampaign, daysLeft: Number(e.target.value) })
+                        }
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-stone-300 mb-1">Categoría</label>
+                      <select
+                        value={currentCampaign.category || 'health'}
+                        onChange={(e) =>
+                          setCurrentCampaign({ ...currentCampaign, category: e.target.value as any })
+                        }
+                        className="w-full px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                      >
+                        <option value="health">Salud</option>
+                        <option value="education">Educación</option>
+                        <option value="cooperative">Cooperativas</option>
+                        <option value="emergency">Emergencia</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">Hashtag de difusión</label>
+                    <input
+                      type="text"
+                      value={currentCampaign.hashtag || '#UNMS_Solidaridad'}
+                      onChange={(e) => setCurrentCampaign({ ...currentCampaign, hashtag: e.target.value })}
+                      placeholder="#CampañaUNMS"
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-300 mb-1">Imagen de Portada</label>
+                    <input
+                      type="text"
+                      value={currentCampaign.imageUrl || ''}
+                      onChange={(e) => setCurrentCampaign({ ...currentCampaign, imageUrl: e.target.value })}
+                      className="w-full px-3.5 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white"
+                    />
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {presetImages.map((p) => (
+                        <button
+                          type="button"
+                          key={p.label}
+                          onClick={() => setCurrentCampaign({ ...currentCampaign, imageUrl: p.url })}
+                          className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 rounded-lg text-[10px] text-stone-300"
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <input
+                      type="checkbox"
+                      id="camp-urgent"
+                      checked={currentCampaign.urgent || false}
+                      onChange={(e) => setCurrentCampaign({ ...currentCampaign, urgent: e.target.checked })}
+                      className="rounded text-rose-600 focus:ring-0"
+                    />
+                    <label htmlFor="camp-urgent" className="text-xs text-stone-300 flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Marcar como campaña urgente (badge destacado)</span>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingCampaign(false);
+                        setCurrentCampaign(null);
+                      }}
+                      className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-xl text-xs font-bold"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-stone-950 rounded-xl text-xs font-bold shadow-md"
+                    >
+                      Guardar Campaña
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
