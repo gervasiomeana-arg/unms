@@ -1,0 +1,10 @@
+{
+  "name": "Remix Unión Nacional de Mujeres Saharauis (UNMS)",
+  "description": "Plataforma oficial multilingüe de la Unión Nacional de Mujeres Saharauis (UNMS), dedicada a la visibilización de su labor humanitaria, activismo social, historias de vida, testimonios audiovisuales y canal de apoyo y donaciones.",
+  "requestFramePermissions": [
+    "notifications"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
