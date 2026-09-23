@@ -107,7 +107,7 @@ export const AudiovisualGallery: React.FC = () => {
                   {/* Play Button Icon in Center */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-14 h-14 rounded-full bg-amber-600/90 group-hover:bg-amber-500 text-stone-950 flex items-center justify-center shadow-xl group-hover:scale-115 transition-transform">
-                      {media.mediaUrl ? <Play className={`w-6 h-6 fill-stone-950 ${isRTL ? 'rotate-180' : ''}`} /> : <Quote className="w-6 h-6" />}
+                      {media.type === 'photo_story' ? <ImageIcon className="w-6 h-6" /> : media.mediaUrl ? <Play className={`w-6 h-6 fill-stone-950 ${isRTL ? 'rotate-180' : ''}`} /> : <Quote className="w-6 h-6" />}
                     </div>
                   </div>
 
@@ -148,7 +148,7 @@ export const AudiovisualGallery: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-1 text-xs font-bold text-amber-400 group-hover:text-amber-300">
-                  <span>{media.type === 'photo_story' ? (language === 'es' ? 'Ver fotografías' : 'View photos') : media.type === 'video' && media.mediaUrl ? (language === 'es' ? 'Reproducir vídeo' : 'Play video') : t.viewTranscript[language]}</span>
+                  <span>{media.type === 'photo_story' ? (language === 'es' ? 'Ver fotografías' : 'View photos') : media.type === 'video' && media.mediaUrl ? (language === 'es' ? 'Reproducir vídeo' : 'Play video') : media.type === 'audio' && media.mediaUrl ? (language === 'es' ? 'Escuchar muestra' : 'Listen to sample') : t.viewTranscript[language]}</span>
                   <ArrowRight className={`w-3.5 h-3.5 ${isRTL ? 'rotate-180' : ''}`} />
                 </div>
               </div>

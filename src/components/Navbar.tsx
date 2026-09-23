@@ -66,7 +66,7 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -112;
+      const yOffset = window.innerWidth >= 1024 ? -156 : -112;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center justify-between gap-2 h-18 sm:h-20">
+        <div className="flex min-w-0 items-center justify-between gap-2 h-18 sm:h-20 lg:grid lg:h-auto lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-6 lg:gap-y-2 lg:py-3">
           {/* Logo & Brand */}
           <button
             type="button"
@@ -99,7 +99,7 @@ export const Navbar: React.FC = () => {
             aria-label="UNMS · volver al inicio"
           >
             {/* Elegant emblem */}
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-stone-900 flex items-center justify-center p-0.5 shadow-md shadow-amber-900/20 group-hover:scale-105 transition-transform">
+            <div className="w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-stone-900 flex items-center justify-center p-0.5 shadow-md shadow-amber-900/20 group-hover:scale-105 transition-transform">
               <div className="w-full h-full rounded-[10px] bg-stone-950 flex flex-col items-center justify-center border border-amber-500/40">
                 <span className="text-amber-400 font-bold text-xs tracking-wider">UNMS</span>
                 <span className="text-[9px] text-stone-400 font-serif">1974</span>
@@ -122,38 +122,38 @@ export const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav aria-label="Navegación principal" className="hidden lg:col-span-2 lg:row-start-2 lg:flex lg:items-center lg:justify-center lg:gap-2 lg:border-t lg:border-stone-800 lg:pt-2">
             <button
               onClick={() => scrollTo('sobre-unms')}
-              className="px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
+              className="whitespace-nowrap px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
               id="nav-about-link"
             >
               {t.about[language]}
             </button>
             <button
               onClick={() => scrollTo('lineas-accion')}
-              className="px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
+              className="whitespace-nowrap px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
               id="nav-pillars-link"
             >
               {t.pillars[language]}
             </button>
             <button
               onClick={() => scrollTo('historias-blog')}
-              className="px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
+              className="whitespace-nowrap px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
               id="nav-blog-link"
             >
               {t.blog[language]}
             </button>
             <button
               onClick={() => scrollTo('galeria-audiovisual')}
-              className="px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
+              className="whitespace-nowrap px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
               id="nav-gallery-link"
             >
               {t.gallery[language]}
             </button>
             <button
               onClick={() => scrollTo('campanas-solidaridad')}
-              className="px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
+              className="whitespace-nowrap px-3 py-2 text-sm font-medium text-stone-300 hover:text-white hover:bg-stone-800/60 rounded-lg transition-colors"
               id="nav-campaigns-link"
             >
               {t.campaigns[language]}
@@ -161,7 +161,7 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Action Tools: Language, Push Notifications, Donate, Admin */}
-          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3 lg:col-start-2 lg:row-start-1">
             {/* Language Selector Dropdown */}
             <div className="relative" ref={langRef}>
               <button
