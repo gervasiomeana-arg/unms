@@ -5,6 +5,9 @@ import healthImage from '../assets/images/unms_health_clinic_1788306102072.webp'
 import educationImage from '../assets/images/unms_education_school_1788306112923.webp';
 import advocacyImage from '../assets/images/unms_un_advocacy_1788306125550.webp';
 import cultureImage from '../assets/images/unms_culture_tea_1788306136612.webp';
+import leadershipVideo from '../assets/media/muestra-liderazgo.mp4?url';
+import healthVideo from '../assets/media/muestra-salud.mp4?url';
+import sampleAudio from '../assets/media/muestra-sonora.mp3?url';
 
 // Asset paths
 export const IMAGES = {
@@ -406,7 +409,7 @@ export const initialTestimonials: TestimonialMedia[] = [
     location: 'Wilaya de Bojador',
     duration: '00:07',
     thumbnailUrl: IMAGES.hero,
-    mediaUrl: '/media/muestra-liderazgo.mp4',
+    mediaUrl: leadershipVideo,
     quote: {
       es: 'Cuando llegamos sin nada en 1975, las mujeres levantamos los primeros refugios, organizamos las escuelas y repartimos cada grano de alimento con justicia absoluta.',
       en: 'When we arrived with nothing in 1975, women built the first shelters, set up the schools, and distributed every grain of food with total equity.',
@@ -448,7 +451,7 @@ Today, over 70% of teaching and healthcare roles in the camps are held by univer
     location: 'Hospital Central de Smara',
     duration: '00:07',
     thumbnailUrl: IMAGES.health,
-    mediaUrl: '/media/muestra-salud.mp4',
+    mediaUrl: healthVideo,
     quote: {
       es: 'Estudié medicina en el extranjero gracias al apoyo de mi comunidad, y regresé al campamento para devolverle cada gota de esperanza a nuestras madres.',
       en: 'I studied medicine abroad through my community support, and I returned to the camps to give back hope to every mother and newborn.',
@@ -486,7 +489,7 @@ El compromiso de las enfermeras saharauis es inigualable: no hay descanso cuando
     location: 'Wilaya de El Aaiún',
     duration: '00:12',
     thumbnailUrl: IMAGES.culture,
-    mediaUrl: '/media/muestra-sonora.mp3',
+    mediaUrl: sampleAudio,
     quote: {
       es: 'Este sonido instrumental sirve para probar el reproductor. El audio definitivo está pendiente de aprobación.',
       en: 'This instrumental sample tests the player. Final audio awaits approval.',

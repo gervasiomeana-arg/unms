@@ -31,7 +31,7 @@ export const MediaDetailModal: React.FC<{ media: TestimonialMedia; onClose: () =
       <motion.article role="dialog" aria-modal="true" aria-labelledby="media-title" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="my-auto max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-stone-900 text-white shadow-2xl">
         <div className="relative aspect-video overflow-hidden bg-stone-950">
           {media.mediaUrl && media.type === 'video' && !mediaError
-            ? <video className="h-full w-full object-contain" src={media.mediaUrl} controls playsInline preload="metadata" poster={media.thumbnailUrl} onError={() => setMediaError(true)} />
+            ? <video className="h-full w-full object-contain" src={media.mediaUrl} controls autoPlay muted playsInline preload="metadata" poster={media.thumbnailUrl} onError={() => setMediaError(true)} />
             : <img className="h-full w-full object-contain" src={media.type === 'photo_story' ? photos[photoIndex] : media.thumbnailUrl} alt={`${getLocalized(media.title, language)}${media.type === 'photo_story' ? ` · ${photoIndex + 1}/${photos.length}` : ''}`} />}
           <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 rounded-full bg-stone-950/80 p-2.5 text-white hover:bg-stone-800"><X className="h-5 w-5" /></button>
           {media.type === 'photo_story' && photos.length > 1 && <>

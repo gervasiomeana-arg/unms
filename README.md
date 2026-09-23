@@ -17,7 +17,7 @@ npm run build
 - Secciones: presentación, líneas de acción, historias, galería, campañas y mensajes.
 - La vista de apoyo permite explorar importes, causa y frecuencia, pero **no recibe dinero ni solicita datos de pago**.
 - Las campañas, cifras, historias, fechas, fotografías y registros editoriales son **ilustrativos y requieren validación de la organización**.
-- Dos vídeos breves de muestra, sin sonido ni testimonios reales, se reproducen con controles nativos. Son montajes hechos con las fotografías ilustrativas disponibles, no entrevistas.
+- Dos vídeos breves de muestra, sin sonido ni testimonios reales, se reproducen con controles nativos. Son montajes animados hechos con las fotografías ilustrativas disponibles, no entrevistas. Los medios se incorporan como recursos de la aplicación para que la vista previa resuelva sus rutas.
 - Un audio instrumental sintético de 12 segundos permite probar el reproductor. No representa música o testimonios reales de la organización.
 - La galería fotográfica contiene seis imágenes ilustrativas y permite navegar entre ellas con flechas, miniaturas y teclado. El panel permite añadir las URL de fotos y sustituir los vídeos por archivos MP4/WebM propios.
 - El panel editorial y los mensajes guardan cambios en el navegador mediante `localStorage`. No existe una base de datos compartida ni autenticación de producción.

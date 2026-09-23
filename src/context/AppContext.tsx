@@ -113,18 +113,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const [testimonials, setTestimonials] = useState<TestimonialMedia[]>(() => {
-    // Upgrade previously cached demo entries without replacing custom media.
+    // Replace only the original demo records saved by older versions. A custom
+    // media URL or a custom photo gallery always takes precedence.
     return loadLocalList('unms_testimonials', initialTestimonials).map((item) => {
       const sample = initialTestimonials.find((entry) => entry.id === item.id);
       if (!sample) return item;
-      if (item.type === 'video' && !item.mediaUrl && item.speaker === 'Testimonio ilustrativo') {
-        return { ...item, title: sample.title, duration: sample.duration, mediaUrl: sample.mediaUrl };
+      const originalTitles: Record<string, string> = {
+        'test-shweirif-liderazgo': 'Construyendo una República en el Refugio',
+        'test-dra-salek-salud': 'De la Tienda al Quirófano',
+        'test-podcast-poesia-oral': 'Podcast: Cantos de Resistencia',
+      };
+      const isOriginalDemo = item.title?.es === sample.title.es ||
+        item.title?.es?.startsWith(originalTitles[item.id] || '\u0000');
+      if ((item.type === 'video' || item.type === 'audio') &&
+          isOriginalDemo && (!item.mediaUrl || item.mediaUrl.startsWith('/media/muestra-'))) {
+        return sample;
       }
-      if (item.type === 'audio' && !item.mediaUrl && item.id === 'test-podcast-poesia-oral' && item.speaker === 'Colectivo cultural (ejemplo)') {
-        return { ...sample };
-      }
-      if (item.type === 'photo_story' && !item.photoUrls?.length && item.id === 'test-fotoensayo-cooperativas') {
-        return { ...item, title: sample.title, duration: sample.duration, photoUrls: sample.photoUrls };
+      if (item.type === 'photo_story' && !item.photoUrls?.length && item.id === 'test-fotoensayo-cooperativas' &&
+          (item.title?.es === sample.title.es || item.title?.es?.startsWith('Ensayo Fotográfico: Manos que Crean'))) {
+        return sample;
       }
       return item;
     });

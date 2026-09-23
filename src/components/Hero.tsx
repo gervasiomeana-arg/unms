@@ -12,7 +12,7 @@ export const Hero: React.FC = () => {
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -112;
+      const yOffset = window.innerWidth >= 1024 ? -156 : -112;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
